@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Lottie",
+        "repositoryURL": "https://github.com/LottieFiles/lottie-ios",
+        "state": {
+          "branch": null,
+          "revision": "eb115967234671b725264422d82c9d1d6b226e5a",
+          "version": "3.1.5"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
