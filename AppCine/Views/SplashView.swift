@@ -18,7 +18,10 @@ struct SplashView: View {
             
             VStack {
                 if self.isActive {
-                    SigninView()
+                    withAnimation(Animation.easeOut) {
+                        SigninView()
+                            .transition(.move(edge: .leading))
+                    }
                 } else {
                     LottieImage(animationName: "popcorn", loopMode: .playOnce)
                 }
