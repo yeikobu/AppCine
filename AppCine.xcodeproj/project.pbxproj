@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1620C9C427ADBD6700168D20 /* SignupSigninValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1620C9C327ADBD6700168D20 /* SignupSigninValidation.swift */; };
 		164788D827A8BA1900C4DC77 /* AppCineApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164788D727A8BA1900C4DC77 /* AppCineApp.swift */; };
 		164788DC27A8BA1B00C4DC77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 164788DB27A8BA1B00C4DC77 /* Assets.xcassets */; };
 		164788DF27A8BA1B00C4DC77 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 164788DE27A8BA1B00C4DC77 /* Preview Assets.xcassets */; };
@@ -14,10 +15,15 @@
 		164788E927A8C32B00C4DC77 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 164788E827A8C32B00C4DC77 /* Lottie */; };
 		164788EB27A8C38900C4DC77 /* LottieImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164788EA27A8C38900C4DC77 /* LottieImage.swift */; };
 		164788ED27A8C67000C4DC77 /* popcorn.json in Resources */ = {isa = PBXBuildFile; fileRef = 164788EC27A8C67000C4DC77 /* popcorn.json */; };
+		16644C0627AC8530006886C8 /* SUImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16644C0527AC8530006886C8 /* SUImagePickerView.swift */; };
+		16644C0927AC9041006886C8 /* SaveLocalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16644C0827AC9041006886C8 /* SaveLocalData.swift */; };
 		169DFC2227A8D34400B3200A /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169DFC2127A8D34400B3200A /* SplashView.swift */; };
+		16DD4EA827AB1ECE00135585 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16DD4EA727AB1ECE00135585 /* DashboardView.swift */; };
+		16DD4EAA27AB207F00135585 /* AvatarNicknameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16DD4EA927AB207F00135585 /* AvatarNicknameView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1620C9C327ADBD6700168D20 /* SignupSigninValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupSigninValidation.swift; sourceTree = "<group>"; };
 		164788D427A8BA1900C4DC77 /* AppCine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppCine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		164788D727A8BA1900C4DC77 /* AppCineApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCineApp.swift; sourceTree = "<group>"; };
 		164788DB27A8BA1B00C4DC77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -25,7 +31,12 @@
 		164788E527A8BAFB00C4DC77 /* SigninView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninView.swift; sourceTree = "<group>"; };
 		164788EA27A8C38900C4DC77 /* LottieImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieImage.swift; sourceTree = "<group>"; };
 		164788EC27A8C67000C4DC77 /* popcorn.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = popcorn.json; sourceTree = "<group>"; };
+		16644C0527AC8530006886C8 /* SUImagePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SUImagePickerView.swift; sourceTree = "<group>"; };
+		16644C0727AC8D45006886C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		16644C0827AC9041006886C8 /* SaveLocalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveLocalData.swift; sourceTree = "<group>"; };
 		169DFC2127A8D34400B3200A /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		16DD4EA727AB1ECE00135585 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		16DD4EA927AB207F00135585 /* AvatarNicknameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarNicknameView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +70,7 @@
 		164788D627A8BA1900C4DC77 /* AppCine */ = {
 			isa = PBXGroup;
 			children = (
+				16644C0727AC8D45006886C8 /* Info.plist */,
 				164788D727A8BA1900C4DC77 /* AppCineApp.swift */,
 				169DFC2527A8D5AD00B3200A /* ViewModels */,
 				169DFC2427A8D59D00B3200A /* Models */,
@@ -83,6 +95,8 @@
 			children = (
 				169DFC2127A8D34400B3200A /* SplashView.swift */,
 				164788E527A8BAFB00C4DC77 /* SigninView.swift */,
+				16DD4EA727AB1ECE00135585 /* DashboardView.swift */,
+				16DD4EA927AB207F00135585 /* AvatarNicknameView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -90,7 +104,7 @@
 		169DFC2427A8D59D00B3200A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				164788EA27A8C38900C4DC77 /* LottieImage.swift */,
+				16644C0827AC9041006886C8 /* SaveLocalData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -98,6 +112,9 @@
 		169DFC2527A8D5AD00B3200A /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				164788EA27A8C38900C4DC77 /* LottieImage.swift */,
+				16644C0527AC8530006886C8 /* SUImagePickerView.swift */,
+				1620C9C327ADBD6700168D20 /* SignupSigninValidation.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -181,8 +198,13 @@
 			files = (
 				164788D827A8BA1900C4DC77 /* AppCineApp.swift in Sources */,
 				169DFC2227A8D34400B3200A /* SplashView.swift in Sources */,
+				16644C0927AC9041006886C8 /* SaveLocalData.swift in Sources */,
+				1620C9C427ADBD6700168D20 /* SignupSigninValidation.swift in Sources */,
+				16DD4EA827AB1ECE00135585 /* DashboardView.swift in Sources */,
+				16644C0627AC8530006886C8 /* SUImagePickerView.swift in Sources */,
 				164788EB27A8C38900C4DC77 /* LottieImage.swift in Sources */,
 				164788E627A8BAFB00C4DC77 /* SigninView.swift in Sources */,
+				16DD4EAA27AB207F00135585 /* AvatarNicknameView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,6 +338,8 @@
 				DEVELOPMENT_TEAM = 6Z8MU97UL5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AppCine/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "It will use camera in order to take a picture to your avatar";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -345,6 +369,8 @@
 				DEVELOPMENT_TEAM = 6Z8MU97UL5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AppCine/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "It will use camera in order to take a picture to your avatar";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
