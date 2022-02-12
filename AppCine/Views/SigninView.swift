@@ -31,7 +31,6 @@ struct SigninView: View {
             }
             .navigationBarHidden(true)
         }
-        
             
     }
 }
@@ -39,7 +38,8 @@ struct SigninView: View {
 
 struct SignInAndSingUpView: View {
     
-    @State var signInType = true
+    @State var signInType: Bool = true
+    @State var selection: Int = 0
     
     var body: some View {
         
@@ -51,6 +51,7 @@ struct SignInAndSingUpView: View {
                 Button {
                     withAnimation(Animation.default) {
                         signInType = true
+                        selection = 0
                     }
                 } label: {
                     Text("SIGN IN")
@@ -63,6 +64,7 @@ struct SignInAndSingUpView: View {
                 Button {
                     withAnimation(Animation.easeInOut) {
                         signInType = false
+                        selection = 1
                     }
                 } label: {
                     Text("SIGN UP")
@@ -73,24 +75,22 @@ struct SignInAndSingUpView: View {
                 Spacer()
             }
             
-            Spacer()
-            
-            if signInType == true {
-                withAnimation(Animation.easeOut(duration: 10)) {
-                    SignInView()
-                        .transition(.move(edge: .leading))
-                        
+            ZStack {
+                VStack {
+                    if signInType == true {
+                        withAnimation(Animation.easeOut(duration: 10)) {
+                            SignInView()
+                                .transition(.move(edge: .leading))
+                        }
+                    } else {
+                        withAnimation(Animation.easeOut(duration: 10)) {
+                            SignUpView()
+                                   .transition(.move(edge: .trailing))
+                        }
+                    }
                 }
-                
-                    
-            } else {
-                withAnimation(Animation.easeOut(duration: 10)) {
-                    SignUpView()
-                        .transition(.move(edge: .trailing))
-                }
-                
             }
-
+           
         }
         
     }
@@ -105,7 +105,7 @@ struct SignInView: View {
     
     var body: some View {
         
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack {
                 VStack(alignment: .leading) {
                     
@@ -212,6 +212,19 @@ struct SignInView: View {
                     }
                     .background(Color("TextFieldColor"))
                     .cornerRadius(15)
+                    
+                    VStack(alignment: .trailing) {
+                        Button {
+                            //
+                        } label: {
+                            Text("Forgot password?")
+                                .foregroundColor(Color("ButtonsColor"))
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.top, 10)
+                   
+
 
                 }
                 .padding(.horizontal, 10)
@@ -226,28 +239,50 @@ struct SignInView: View {
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .padding()
                 }
+                .frame(maxWidth: .infinity)
                 .background(Color("ButtonsColor"))
                 .cornerRadius(15)
                 .padding(.vertical, 30)
+                .padding(.horizontal, 10)
+                .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
+                .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
                 .alert(isPresented: $isUserNotFound) {
                     Alert(title: Text("Error"), message: Text("Email or Password not found"), dismissButton: .default(Text("Okay")))
                 }
             }
             .background(Color("CardColor"))
             .cornerRadius(15)
-            .padding(.horizontal, 10)
             .padding(.vertical, 20)
             
             Spacer()
-            
-            
-            
+
             NavigationLink(isActive: $isSingInfieldsComplete) {
                 DashboardView()
             } label: {
                 EmptyView()
             }
         }
+        .cornerRadius(15)
+        .padding(.horizontal, 10)
+        .frame(maxHeight: .infinity)
+        .onAppear {
+            autoSignin()
+        }
+        
+    }
+    
+    func autoSignin() {
+        let updateDataObject = SaveData()
+        let result = updateDataObject.validateInit()
+        
+        if result == true {
+            self.isUserNotFound = false
+            self.isSingInfieldsComplete = true
+        } else {
+            self.isUserNotFound = true
+        }
+        
+        
     }
     
     func signin() {
@@ -439,7 +474,6 @@ struct SignUpView: View {
                                 
                                 ValidationFormView(iconName: signupSigninValidation.isPasswordCapitalLetter ? "checkmark.circle" : "xmark.circle", iconColor: signupSigninValidation.isPasswordCapitalLetter ? Color.green : Color.red, baseForegroundColor: Color.gray, formText: "Must cointain at leas one capital letter", conditionChecked: signupSigninValidation.isPasswordCapitalLetter)
                             }
-                            
                         }
                         
                         //Comfirm Password field
@@ -522,17 +556,21 @@ struct SignUpView: View {
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .padding()
                 }
+                .frame(maxWidth: .infinity)
                 .background(Color("ButtonsColor"))
                 .cornerRadius(15)
                 .padding(.vertical, 30)
+                .padding(.horizontal, 10)
+                .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
+                .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
                 .alert(isPresented: $areFieldsIncomplete) {
                     Alert(title: Text("ERROR"), message: Text("All fields are requiere"), dismissButton: .default(Text("Okay")))
                 }
             }
             .background(Color("CardColor"))
             .cornerRadius(15)
-            .padding(.horizontal, 10)
             .padding(.top, 20)
+            .frame(maxHeight: .infinity)
             
             Spacer()
             
@@ -543,6 +581,8 @@ struct SignUpView: View {
             }
 
         }
+        .cornerRadius(15)
+        .padding(.horizontal, 10)
     }
     
     func signup() {

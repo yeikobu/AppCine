@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 class SaveData {
-
+    
     func saveData(email: String, pass: String, name: String) -> Bool {
         print("Got information in saveData: \(email) + \(pass) + \(name)")
         
@@ -24,6 +24,14 @@ class SaveData {
         print("info in receibeData \(userData)")
         
         return userData
+    }
+    
+    func validateInit() -> Bool{
+        if let _: [String] = UserDefaults.standard.stringArray(forKey: "userDatas") {
+           return true
+        } else {
+           return false
+        }
     }
     
     func validate(email: String, pass: String) -> Bool {
@@ -44,5 +52,13 @@ class SaveData {
         print("UserDefaults Posi 1: \(UserDefaults.standard.stringArray(forKey: "userDatas")![1])")
         
     }
+    
+//    func returnUserData() -> String {       //Descomentar esta fucion en produccion
+//        var name: [String] = []
+//        if let userName: [String] = UserDefaults.standard.stringArray(forKey: "userDatas") {
+//            name = userName
+//        }
+//        return name[2]
+//    }
     
 }
