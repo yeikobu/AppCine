@@ -84,13 +84,13 @@ struct CustomTabView: View {
             .padding(.vertical, 3)
             .background(Color("TextFieldColor"))
             .clipShape(Capsule())
-            .shadow(color: .black.opacity(0.20), radius: 5, x: 5, y: 5)
-            .shadow(color: .black.opacity(0.20), radius: 5, x: -5, y: -5)
+            .shadow(color: .black.opacity(0.70), radius: 5, x: 5, y: 5)
+            .shadow(color: .black.opacity(0.70), radius: 5, x: -5, y: -5)
             .padding(.horizontal, 10)
             
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .background(Color.white.opacity(0.05).ignoresSafeArea(.all, edges: .all))
+        .background(Color.white.opacity(0.20).ignoresSafeArea(.all, edges: .all))
         
     }
     

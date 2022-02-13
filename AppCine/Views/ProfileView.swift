@@ -91,7 +91,7 @@ struct ProfileStatsView: View {
         }
         .onAppear {
 
-//            userName = saveData.returnUserData()  //Descomentar esta linea en produccion
+            userName = saveData.returnUserData()  //Descomentar esta linea en produccion
             
             if returnUiImage(named: "avatar") != nil {
                 profileImage = returnUiImage(named: "avatar")!

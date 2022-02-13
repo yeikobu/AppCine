@@ -53,12 +53,12 @@ class SaveData {
         
     }
     
-//    func returnUserData() -> String {       //Descomentar esta fucion en produccion
-//        var name: [String] = []
-//        if let userName: [String] = UserDefaults.standard.stringArray(forKey: "userDatas") {
-//            name = userName
-//        }
-//        return name[2]
-//    }
+    func returnUserData() -> String {       //Descomentar esta fucion en produccion
+        var name: [String] = []
+        if let userName: [String] = UserDefaults.standard.stringArray(forKey: "userDatas") {
+            name = userName
+        }
+        return name[2]
+    }
     
 }
