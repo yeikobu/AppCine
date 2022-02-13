@@ -27,6 +27,10 @@ struct AvatarNicknameView: View {
                     .foregroundColor(.white)
                     .bold()
                 
+                Text("You can do it later, if you want")
+                    .foregroundColor(.white)
+                    .font(.system(size: 13))
+                
                 Button {
                     self.isShowingConfirmation.toggle()
                 } label: {
@@ -37,10 +41,12 @@ struct AvatarNicknameView: View {
                             .frame(width: 120, height: 120)
                             .cornerRadius(60)
                         
-                        Image(systemName: "camera")
-                            .foregroundColor(Color(.white))
-                            .font(.system(size: 26, weight: .bold))
-                            .offset(x: 40, y: 40)
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Color("ButtonsColor"))
+                            .font(.system(size: 35, weight: .bold))
+                            .offset(x: 38, y: 34)
+                            .shadow(color: .black, radius: 5, x: 1, y: 1)
+                            .shadow(color: .black, radius: 5, x: -1, y: -1)
                             
                     }
                     .confirmationDialog("Choose a method to select your avatar image", isPresented: self.$isShowingConfirmation) {
@@ -89,6 +95,8 @@ struct AvatarNicknameView: View {
                     .background(Color("ButtonsColor"))
                     .cornerRadius(15)
                     .padding(.vertical, 30)
+                    .shadow(color: .black, radius: 5, x: 1, y: 1)
+                    .shadow(color: .black, radius: 5, x: -1, y: -1)
                 }
                 .padding(.top, 20)
                 
