@@ -98,23 +98,23 @@ struct HomeSubModuleView: View {
                 .cornerRadius(12)
                 
                 if currentTab == "Popular" {
-                    withAnimation(Animation.easeIn) {
+                    withAnimation(Animation.spring()) {
                         PopularMoviesInfoView()
-                            .transition(.scale)
+                            .transition(.move(edge: .bottom))
                     }
                 }
                 
                 if currentTab == "Upcoming" {
-                    withAnimation(Animation.easeIn) {
+                    withAnimation(Animation.spring()) {
                         UpcomingrMoviesInfoView()
-                            .transition(.scale)
+                            .transition(.move(edge: .bottom))
                     }
                 }
                 
                 if currentTab == "Top Rated" {
-                    withAnimation(Animation.easeIn) {
+                    withAnimation(Animation.spring()) {
                         TopRatedMoviesInfoView()
-                            .transition(.scale)
+                            .transition(.move(edge: .bottom))
                     }
                 }
                 
@@ -173,8 +173,13 @@ struct PopularMoviesInfoView: View {
     
     @ObservedObject var moviesViewModel: PopularMoviesViewModel = PopularMoviesViewModel()
     @State var title: String = ""
+    @State var imgUrl: String = ""
+    @State var overview: String = ""
+    @State var releaseDate: String = ""
+    @State var isMovieDetailPressed: Bool = false
+    @State var isShowDetailPage: Bool = false
+    @Namespace var animation
     let gridForm = [GridItem(.flexible()), GridItem(.flexible())]
-    
     
     var body: some View {
         VStack {
@@ -182,9 +187,11 @@ struct PopularMoviesInfoView: View {
                 LazyVGrid(columns: gridForm) {
                     ForEach(moviesViewModel.moviesModel?.results ?? [], id: \.self) { movie in
                         Button {
+                            isMovieDetailPressed.toggle()
                             title = movie.title!
-                            print(title)
-                            
+                            overview = movie.overview!
+                            releaseDate = movie.releaseDate!
+                            imgUrl = moviesViewModel.imgUrl + movie.posterPath!            
                         } label: {
                             
                             VStack {
@@ -216,13 +223,15 @@ struct PopularMoviesInfoView: View {
                                 }
                                 
                             }
-                            .background(Color("TabBarColor"))
+                            .background(Color("CardColor"))
                             .cornerRadius(15)
                             
                         }
                         .padding(.top, 10)
                         .padding(.bottom, 20)
-
+//                        .sheet(isPresented: $isMovieDetailPressed) {
+//                            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+//                        }
                     }
                     
                 }
@@ -231,7 +240,14 @@ struct PopularMoviesInfoView: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .padding(.horizontal, 10)
-
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        NavigationLink(isActive: $isMovieDetailPressed) {
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+                .transition(AnyTransition.scale)
+        } label: {
+            EmptyView()
+        }
     }
 }
 
@@ -240,6 +256,10 @@ struct UpcomingrMoviesInfoView: View {
     
     @ObservedObject var moviesViewModel: UpcomingMoviesViewModel = UpcomingMoviesViewModel()
     @State var title: String = ""
+    @State var imgUrl: String = ""
+    @State var overview: String = ""
+    @State var releaseDate: String = ""
+    @State var isMovieDetailPressed: Bool = false
     let gridForm = [GridItem(.flexible()), GridItem(.flexible())]
     
     
@@ -250,7 +270,10 @@ struct UpcomingrMoviesInfoView: View {
                     ForEach(moviesViewModel.moviesModel?.results ?? [], id: \.self) { movie in
                         Button {
                             title = movie.title!
-                            print(title)
+                            overview = movie.overview!
+                            releaseDate = movie.releaseDate!
+                            imgUrl = moviesViewModel.imgUrl + movie.posterPath!
+                            isMovieDetailPressed.toggle()
                             
                         } label: {
                             
@@ -283,13 +306,15 @@ struct UpcomingrMoviesInfoView: View {
                                 }
                                 
                             }
-                            .background(Color("TabBarColor"))
+                            .background(Color("CardColor"))
                             .cornerRadius(15)
                             
                         }
                         .padding(.top, 10)
                         .padding(.bottom, 20)
-
+//                        .sheet(isPresented: $isMovieDetailPressed) {
+//                            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+//                        }
                     }
                     
                 }
@@ -298,6 +323,14 @@ struct UpcomingrMoviesInfoView: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .padding(.horizontal, 10)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        NavigationLink(isActive: $isMovieDetailPressed) {
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+                .transition(AnyTransition.scale)
+        } label: {
+            EmptyView()
+        }
     }
 }
 
@@ -306,6 +339,10 @@ struct TopRatedMoviesInfoView: View {
     
     @ObservedObject var moviesViewModel: TopRatedMoviesViewModel = TopRatedMoviesViewModel()
     @State var title: String = ""
+    @State var imgUrl: String = ""
+    @State var overview: String = ""
+    @State var releaseDate: String = ""
+    @State var isMovieDetailPressed: Bool = false
     let gridForm = [GridItem(.flexible()), GridItem(.flexible())]
     
     
@@ -316,7 +353,10 @@ struct TopRatedMoviesInfoView: View {
                     ForEach(moviesViewModel.moviesModel?.results ?? [], id: \.self) { movie in
                         Button {
                             title = movie.title!
-                            print(title)
+                            overview = movie.overview!
+                            releaseDate = movie.releaseDate!
+                            imgUrl = moviesViewModel.imgUrl + movie.posterPath!
+                            isMovieDetailPressed.toggle()
                             
                         } label: {
                             
@@ -349,12 +389,15 @@ struct TopRatedMoviesInfoView: View {
                                 }
                                 
                             }
-                            .background(Color("TabBarColor"))
+                            .background(Color("CardColor"))
                             .cornerRadius(15)
                             
                         }
                         .padding(.top, 10)
                         .padding(.bottom, 20)
+//                        .sheet(isPresented: $isMovieDetailPressed) {
+//                            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+//                        }
 
                     }
                     
@@ -364,6 +407,14 @@ struct TopRatedMoviesInfoView: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .padding(.horizontal, 10)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        NavigationLink(isActive: $isMovieDetailPressed) {
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+                .transition(AnyTransition.scale)
+        } label: {
+            EmptyView()
+        }
     }
 }
 
@@ -373,3 +424,4 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
+

@@ -28,9 +28,14 @@ struct SigninView: View {
                     SignInAndSingUpView()
                     
                 }
+                .navigationBarHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
             .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
             
     }
 }
@@ -92,6 +97,8 @@ struct SignInAndSingUpView: View {
             }
            
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         
     }
 }
@@ -265,8 +272,11 @@ struct SignInView: View {
         .cornerRadius(15)
         .padding(.horizontal, 10)
         .frame(maxHeight: .infinity)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        
         .onAppear {
-            autoSignin()
+//            autoSignin()
         }
         
     }
@@ -281,8 +291,6 @@ struct SignInView: View {
         } else {
             self.isUserNotFound = true
         }
-        
-        
     }
     
     func signin() {
@@ -583,6 +591,8 @@ struct SignUpView: View {
         }
         .cornerRadius(15)
         .padding(.horizontal, 10)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
     
     func signup() {
@@ -623,6 +633,8 @@ struct ValidationFormView: View {
             Spacer()
         }
         .padding(.horizontal)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
