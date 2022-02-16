@@ -27,7 +27,7 @@ struct MovieDetailView: View {
                     } label: {
                         Image(systemName: "chevron.backward")
                             .foregroundColor(Color.white)
-                            .font(.system(size: 35, weight: .bold))
+                            .font(.system(size: 25, weight: .bold))
                             .padding(.top, 5)
                             .padding(.leading, 10)
                             .shadow(color: .black.opacity(0.90), radius: 5, x: 5, y: 5)

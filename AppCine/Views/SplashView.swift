@@ -10,6 +10,7 @@ import SwiftUI
 struct SplashView: View {
     
     @State var isActive: Bool = false
+    @State var authenticationViewModel = AuthenticationViewModel()
     
     var body: some View {
         ZStack {
@@ -19,7 +20,7 @@ struct SplashView: View {
             VStack {
                 if self.isActive {
                     withAnimation(Animation.easeOut) {
-                        SigninView()
+                        SigninView(authenticationViewModel: AuthenticationViewModel())
                             .transition(.move(edge: .leading))
                     }
                 } else {

@@ -97,7 +97,7 @@ struct ProfileStatsView: View {
         .navigationBarBackButtonHidden(true)
         .onAppear {
 
-            userName = saveData.returnUserData()  //Descomentar esta linea en produccion
+//            userName = saveData.returnUserData()  //Descomentar esta linea en produccion
             
             if returnUiImage(named: "avatar") != nil {
                 profileImage = returnUiImage(named: "avatar")!
@@ -217,7 +217,8 @@ struct SettingsView: View {
         
         VStack {
             Button {
-                isLogoutActive.toggle()
+                AuthenticationViewModel().logout()
+                isLogoutActive = true
             } label: {
                 Text("Logout")
                     .foregroundColor(.red)
@@ -231,7 +232,7 @@ struct SettingsView: View {
         .cornerRadius(15)
         .padding(.horizontal, 10)
         NavigationLink(isActive: $isLogoutActive) {
-            SigninView()
+            SigninView(authenticationViewModel: AuthenticationViewModel())
         } label: {
             EmptyView()
         }

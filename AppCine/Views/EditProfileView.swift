@@ -26,6 +26,9 @@ struct EditProfileView: View {
                         Image(systemName: "chevron.compact.down")
                             .foregroundColor(Color.white)
                             .font(.system(size: 35, weight: .bold))
+                            .padding(.top, 5)
+                            .shadow(color: .black.opacity(0.90), radius: 5, x: 5, y: 5)
+                            .shadow(color: .black.opacity(0.90), radius: 5, x: -5, y: -5)
                     }
                    
                 }
