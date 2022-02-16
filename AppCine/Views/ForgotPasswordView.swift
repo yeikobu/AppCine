@@ -11,8 +11,11 @@ struct ForgotPasswordView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
+    @ObservedObject var signupSigninValidation = SigninSignupValidation()
     @State var email: String = ""
     @State var isBackButtonPressed: Bool = false
+    @State var isEmailAlertActive: Bool = false
+    @State var messajeAlert: String = ""
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -68,14 +71,14 @@ struct ForgotPasswordView: View {
                         
                         ZStack(alignment: .leading) {
                             
-                            if email.isEmpty {
+                            if signupSigninValidation.email.isEmpty {
                                 Text(verbatim: "example@example.com")
                                     .foregroundColor(.gray)
                                     .font(.caption)
                                     .padding(.leading, 5)
                             }
                             
-                            TextField("", text: $email)
+                            TextField("", text: $signupSigninValidation.email)
                                 .foregroundColor(.white)
                                 .keyboardType(.emailAddress)
                                 .font(.body)
@@ -92,7 +95,18 @@ struct ForgotPasswordView: View {
                     
                     VStack {
                         Button {
-                            authenticationViewModel.recoverPass(email: email)
+                            if signupSigninValidation.email.isEmpty {
+                                messajeAlert = "You must enter an email!"
+                                isEmailAlertActive = true
+                            } else if signupSigninValidation.isEmailValid {
+                                authenticationViewModel.recoverPass(email: email)
+                                messajeAlert = "A link has been sended to your email!"
+                                isEmailAlertActive = true
+                            } else {
+                                messajeAlert = "Email format not valid"
+                                isEmailAlertActive = true
+                            }
+                           
                         } label: {
                             Text("Send email")
                                 .foregroundColor(.white)
@@ -107,6 +121,9 @@ struct ForgotPasswordView: View {
                         .padding(.horizontal, 10)
                         .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
                         .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
+                        .alert("\(messajeAlert)", isPresented: $isEmailAlertActive) {
+                            Button("Got it!", role: .cancel) {}
+                        }
                     }
                     .frame(maxWidth: .infinity)
                 }
