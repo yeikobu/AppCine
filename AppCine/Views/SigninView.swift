@@ -9,6 +9,7 @@ import SwiftUI
 import Lottie
 
 struct SigninView: View {
+    @ObservedObject var authenticationViewModel: AuthenticationViewModel
     
     var body: some View {
        
@@ -25,11 +26,19 @@ struct SigninView: View {
                         .frame(width: 100, height: 100)
                         .padding(.bottom, 40)
                     
-                    SignInAndSingUpView()
+                    SignInAndSingUpView(authenticationViewModel: AuthenticationViewModel())
                     
                 }
+                .navigationBarHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
             .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
+        }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        .onAppear {
+          
         }
             
     }
@@ -38,6 +47,7 @@ struct SigninView: View {
 
 struct SignInAndSingUpView: View {
     
+    @ObservedObject var authenticationViewModel: AuthenticationViewModel
     @State var signInType: Bool = true
     @State var selection: Int = 0
     
@@ -79,12 +89,12 @@ struct SignInAndSingUpView: View {
                 VStack {
                     if signInType == true {
                         withAnimation(Animation.easeOut(duration: 10)) {
-                            SignInView()
+                            SignInView(authenticationViewModel: authenticationViewModel)
                                 .transition(.move(edge: .leading))
                         }
                     } else {
                         withAnimation(Animation.easeOut(duration: 10)) {
-                            SignUpView()
+                            SignUpView(authenticationViewModel: authenticationViewModel)
                                    .transition(.move(edge: .trailing))
                         }
                     }
@@ -92,16 +102,20 @@ struct SignInAndSingUpView: View {
             }
            
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         
     }
 }
 
 struct SignInView: View {
     
+    @ObservedObject var authenticationViewModel: AuthenticationViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
     @State var isSecure: Bool = true
     @State var isSingInfieldsComplete: Bool = false
     @State var isUserNotFound = false
+    @State var isUserForgotPass = false
     
     var body: some View {
         
@@ -215,7 +229,7 @@ struct SignInView: View {
                     
                     VStack(alignment: .trailing) {
                         Button {
-                            //
+                            isUserForgotPass = true
                         } label: {
                             Text("Forgot password?")
                                 .foregroundColor(Color("ButtonsColor"))
@@ -223,7 +237,10 @@ struct SignInView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.top, 10)
-                   
+                    .sheet(isPresented: $isUserForgotPass) {
+                        ForgotPasswordView(authenticationViewModel: AuthenticationViewModel())
+                    }
+
 
 
                 }
@@ -238,6 +255,7 @@ struct SignInView: View {
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .padding()
+                        .frame(maxWidth: .infinity)
                 }
                 .frame(maxWidth: .infinity)
                 .background(Color("ButtonsColor"))
@@ -247,7 +265,7 @@ struct SignInView: View {
                 .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
                 .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
                 .alert(isPresented: $isUserNotFound) {
-                    Alert(title: Text("Error"), message: Text("Email or Password not found"), dismissButton: .default(Text("Okay")))
+                    Alert(title: Text("Error"), message: Text( authenticationViewModel.erroMessage ?? "Email or Password not found"), dismissButton: .default(Text("Okay")))
                 }
             }
             .background(Color("CardColor"))
@@ -265,6 +283,9 @@ struct SignInView: View {
         .cornerRadius(15)
         .padding(.horizontal, 10)
         .frame(maxHeight: .infinity)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        
         .onAppear {
             autoSignin()
         }
@@ -272,30 +293,19 @@ struct SignInView: View {
     }
     
     func autoSignin() {
-        let updateDataObject = SaveData()
-        let result = updateDataObject.validateInit()
-        
-        if result == true {
+        if authenticationViewModel.user != nil {
             self.isUserNotFound = false
             self.isSingInfieldsComplete = true
-        } else {
-            self.isUserNotFound = true
         }
-        
-        
     }
     
     func signin() {
-        let updateDataObject = SaveData()
-        let result = updateDataObject.validate(email: signupSigninValidation.email, pass: signupSigninValidation.password)
-        
-        print("Result: \(result)")
-        
-        if result == true {
-            self.isUserNotFound = false
-            self.isSingInfieldsComplete = true
-        } else {
+        if (signupSigninValidation.email.isEmpty || signupSigninValidation.password.isEmpty) {
+            self.isSingInfieldsComplete = false
             self.isUserNotFound = true
+        } else {
+            authenticationViewModel.signin(email: signupSigninValidation.email, password: signupSigninValidation.password)
+            self.isSingInfieldsComplete = true
         }
     }
 
@@ -304,6 +314,7 @@ struct SignInView: View {
 
 struct SignUpView: View {
     
+    @ObservedObject var authenticationViewModel: AuthenticationViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
     @State var isSecure: Bool = true
     @State var isConfirmSecure: Bool = true
@@ -555,6 +566,7 @@ struct SignUpView: View {
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .padding()
+                        .frame(maxWidth: .infinity)
                 }
                 .frame(maxWidth: .infinity)
                 .background(Color("ButtonsColor"))
@@ -564,7 +576,7 @@ struct SignUpView: View {
                 .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
                 .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
                 .alert(isPresented: $areFieldsIncomplete) {
-                    Alert(title: Text("ERROR"), message: Text("All fields are requiere"), dismissButton: .default(Text("Okay")))
+                    Alert(title: Text("ERROR"), message: Text(authenticationViewModel.erroMessage ?? "All fields must be completed correctly"), dismissButton: .default(Text("Okay")))
                 }
             }
             .background(Color("CardColor"))
@@ -583,17 +595,17 @@ struct SignUpView: View {
         }
         .cornerRadius(15)
         .padding(.horizontal, 10)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
     
     func signup() {
-        
-        let saveDataObject = SaveData()
         
         if signupSigninValidation.email.isEmpty || signupSigninValidation.password.isEmpty || signupSigninValidation.userName.isEmpty {
             areFieldsComplete = false
             areFieldsIncomplete = true
         } else {
-            saveDataObject.signUp(email: signupSigninValidation.email, pass: signupSigninValidation.password, username: signupSigninValidation.userName)
+            authenticationViewModel.createNewUser(email: signupSigninValidation.email, password: signupSigninValidation.password)
             areFieldsIncomplete = false
             areFieldsComplete = true
         }
@@ -623,11 +635,13 @@ struct ValidationFormView: View {
             Spacer()
         }
         .padding(.horizontal)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 struct SigninView_Previews: PreviewProvider {
     static var previews: some View {
-        SigninView()
+        SigninView(authenticationViewModel: AuthenticationViewModel())
     }
 }

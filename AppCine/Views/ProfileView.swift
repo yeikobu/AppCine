@@ -12,9 +12,13 @@ struct ProfileView: View {
         ZStack {
             Color("BackgroundColor")
                 .ignoresSafeArea()
+            ScrollView(showsIndicators: false) {
+                ProfileStatsView()
+            }
             
-            ProfileStatsView()
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -89,9 +93,11 @@ struct ProfileStatsView: View {
             
             
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
 
-            userName = saveData.returnUserData()  //Descomentar esta linea en produccion
+//            userName = saveData.returnUserData()  //Descomentar esta linea en produccion
             
             if returnUiImage(named: "avatar") != nil {
                 profileImage = returnUiImage(named: "avatar")!
@@ -117,6 +123,7 @@ struct ProfileStatsView: View {
 struct SettingsView: View {
     
     @Binding var isEditProfileAvtive: Bool
+    @State var isLogoutActive: Bool = false
     
     var body: some View {
         
@@ -203,6 +210,33 @@ struct SettingsView: View {
         .background(Color("CardColor"))
         .cornerRadius(15)
         .padding(.horizontal, 10)
+        
+        Spacer()
+        Spacer()
+        Spacer()
+        
+        VStack {
+            Button {
+                AuthenticationViewModel().logout()
+                isLogoutActive = true
+            } label: {
+                Text("Logout")
+                    .foregroundColor(.red)
+                    .bold()
+            }
+
+        }
+        .padding(.vertical, 15)
+        .frame(maxWidth: .infinity)
+        .background(Color("CardColor"))
+        .cornerRadius(15)
+        .padding(.horizontal, 10)
+        NavigationLink(isActive: $isLogoutActive) {
+            SigninView(authenticationViewModel: AuthenticationViewModel())
+        } label: {
+            EmptyView()
+        }
+
         
     }
 }

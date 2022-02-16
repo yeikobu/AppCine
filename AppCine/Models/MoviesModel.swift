@@ -9,7 +9,7 @@ import Foundation
 
 struct MovieModel: Decodable, Hashable {
     let page: Int?
-    let results: [Result]?
+    let results: [Results]?
     let totalPages, totalResults: Int?
     
     enum CodingKeys: String, CodingKey {
@@ -20,7 +20,7 @@ struct MovieModel: Decodable, Hashable {
     }
 }
 
-struct Result: Decodable, Identifiable, Hashable {
+struct Results: Decodable, Identifiable, Hashable {
     let backdropPath: String?
     let genreIDS: [Int]?
     let id: Int?
