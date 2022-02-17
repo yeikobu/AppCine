@@ -7,6 +7,10 @@
 
 import SwiftUI
 import Lottie
+import Firebase
+import FirebaseAuth
+import GoogleSignIn
+
 
 struct SigninView: View {
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
@@ -27,6 +31,8 @@ struct SigninView: View {
                         .padding(.bottom, 40)
                     
                     SignInAndSingUpView(authenticationViewModel: AuthenticationViewModel())
+                    
+                    SignInSignUpWithThirdParty()
                     
                 }
                 .navigationBarHidden(true)
@@ -125,7 +131,7 @@ struct SignInView: View {
                     
                     Text("Email")
                         .foregroundColor(.white)
-                        .bold()
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .padding(.bottom, -1)
                         .padding(.leading, 4)
                     
@@ -166,7 +172,7 @@ struct SignInView: View {
                     
                     Text("Password")
                         .foregroundColor(.white)
-                        .bold()
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .padding(.top, 20)
                         .padding(.bottom, -0.5)
                         .padding(.leading, 4)
@@ -233,6 +239,7 @@ struct SignInView: View {
                         } label: {
                             Text("Forgot password?")
                                 .foregroundColor(Color("ButtonsColor"))
+                                .font(.system(size: 16, weight: .regular, design: .rounded))
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -333,7 +340,7 @@ struct SignUpView: View {
                     //Username field
                     Text("Username")
                         .foregroundColor(.white)
-                        .bold()
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .padding(.bottom, -1)
                         .padding(.leading, 4)
                     
@@ -374,7 +381,7 @@ struct SignUpView: View {
                     //Email field
                     Text("Email")
                         .foregroundColor(.white)
-                        .bold()
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .padding(.top, 10)
                         .padding(.bottom, -1)
                         .padding(.leading, 4)
@@ -419,7 +426,7 @@ struct SignUpView: View {
                         //Password field
                         Text("Password")
                             .foregroundColor(.white)
-                            .bold()
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .padding(.top, 10)
                             .padding(.bottom, -0.5)
                             .padding(.leading, 4)
@@ -490,7 +497,7 @@ struct SignUpView: View {
                         //Comfirm Password field
                         Text("Confirm password")
                             .foregroundColor(.white)
-                            .bold()
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .padding(.top, 10)
                             .padding(.bottom, -0.5)
                             .padding(.leading, 4)
@@ -571,7 +578,7 @@ struct SignUpView: View {
                 .frame(maxWidth: .infinity)
                 .background(Color("ButtonsColor"))
                 .cornerRadius(15)
-                .padding(.vertical, 30)
+                .padding(.vertical, 15)
                 .padding(.horizontal, 10)
                 .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
                 .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
@@ -640,8 +647,109 @@ struct ValidationFormView: View {
     }
 }
 
+struct SignInSignUpWithThirdParty: View {
+    
+    @State var isLoading: Bool = false
+    @State var logStatus: Bool = false
+    
+    var body: some View {
+        
+        VStack {
+            Text("You can also signin/signup with: ")
+                .foregroundColor(.white)
+                .font(.system(size: 14, design: .rounded))
+            
+            HStack(alignment: .center, spacing: 10) {
+                
+                Button {
+                    googleSignin()
+                } label: {
+                    Image("google")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 45, height: 45, alignment: .center)
+                        .padding(5)
+                }
+            }
+            
+            NavigationLink(isActive: $logStatus) {
+                DashboardView()
+            } label: {
+                EmptyView()
+            }
+        }
+        .overlay(
+            ZStack{
+                if isLoading {
+                    ProgressView()
+                        .font(.title2)
+                        .frame(width: 60, height: 60)
+                        .cornerRadius(10)
+                }
+            }
+        )
+    }
+    
+    func googleSignin() {
+        
+        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+
+        // Create Google Sign In configuration object.
+        let config = GIDConfiguration(clientID: clientID)
+        
+        isLoading = true
+        
+        GIDSignIn.sharedInstance.signIn(with: config, presenting: getRootViewController()) { [self] user, error in
+            
+            if let error = error {
+                isLoading = false
+                print(error.localizedDescription)
+                return
+            }
+            
+            guard let authentication = user?.authentication, let idToken = authentication.idToken else {
+                isLoading = false
+                return
+            }
+            
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
+            
+            Auth.auth().signIn(with: credential) { result, error in
+
+                isLoading = false
+
+                if let error = error {
+                    print(error.localizedDescription)
+                  return
+                }
+
+                // Updating User as Logged in
+                withAnimation{
+                    logStatus = true
+                }
+            }
+        }
+    }
+}
+
 struct SigninView_Previews: PreviewProvider {
     static var previews: some View {
         SigninView(authenticationViewModel: AuthenticationViewModel())
+    }
+}
+
+
+extension View {
+    
+    func getRootViewController() -> UIViewController {
+        guard let screen = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+            return .init()
+        }
+        
+        guard let root = screen.windows.first?.rootViewController else {
+            return .init()
+        }
+        
+        return root
     }
 }
