@@ -265,7 +265,9 @@ struct SignInView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .frame(maxWidth: .infinity)
-                .background(Color("ButtonsColor"))
+                .background(
+                    LinearGradient(gradient: Gradient(colors: [Color("ButtonsColor"), Color("ButtonsSecondaryColor")]), startPoint: .leading, endPoint: .trailing)
+                )
                 .cornerRadius(15)
                 .padding(.vertical, 30)
                 .padding(.horizontal, 10)
@@ -576,7 +578,9 @@ struct SignUpView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .frame(maxWidth: .infinity)
-                .background(Color("ButtonsColor"))
+                .background(
+                    LinearGradient(gradient: Gradient(colors: [Color("ButtonsColor"), Color("ButtonsSecondaryColor")]), startPoint: .leading, endPoint: .trailing)
+                )
                 .cornerRadius(15)
                 .padding(.vertical, 15)
                 .padding(.horizontal, 10)
