@@ -154,7 +154,9 @@ struct TabButton: View {
                         ZStack{
                             if currentTab == title{
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color("ButtonsColor"))
+                                    .fill(
+                                        LinearGradient(gradient: Gradient(colors: [Color("ButtonsColor"), Color("ButtonsSecondaryColor")]), startPoint: .leading, endPoint: .trailing)
+                                    )
                                     .matchedGeometryEffect(id: "TAB", in: animation)
                             }
                         }

@@ -91,6 +91,17 @@ struct MovieInfo: View {
             }
             .padding(.horizontal, 10)
             
+            VStack(alignment: .leading) {
+                
+                Text("Comments")
+                    .foregroundColor(.white)
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                
+                CommentView()
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 30)
+            
         }
         .ignoresSafeArea()
         

@@ -347,7 +347,9 @@ struct EditFieldsModuleView: View {
                             .padding()
                     }
                     .frame(maxWidth: .infinity)
-                    .background(Color("ButtonsColor"))
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [Color("ButtonsColor"), Color("ButtonsSecondaryColor")]), startPoint: .leading, endPoint: .trailing)
+                    )
                     .cornerRadius(15)
                     .padding(.vertical, 30)
                     .padding(.horizontal, 10)
