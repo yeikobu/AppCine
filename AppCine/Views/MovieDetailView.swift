@@ -20,7 +20,7 @@ struct MovieDetailView: View {
             
             VStack {
                 ZStack(alignment: .topLeading) {
-                    MovieInfo(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgURL)
+                    MovieInfo(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgURL, isLiked: false)
                     
                     Button {
                         presentationMode.wrappedValue.dismiss()
@@ -47,7 +47,11 @@ struct MovieDetailView: View {
 
 
 struct MovieInfo: View {
+    
     var title, overview, releaseDate, imgURL: String
+    @State var isLiked: Bool
+    @Namespace var namespace
+    
     var body: some View {
         
         ScrollView(showsIndicators: false) {
@@ -66,9 +70,24 @@ struct MovieInfo: View {
                 
                 Spacer()
                 
-                Image(systemName: "heart")
-                    .foregroundColor(.red)
-                    .font(.system(size: 25))
+                
+                if self.isLiked {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
+                        .matchedGeometryEffect(id: "heart", in: namespace)
+                        .font(.system(size: 30))
+                        .onTapGesture {
+                            isLiked.toggle()
+                        }
+                } else {
+                    Image(systemName: "heart")
+                        .foregroundColor(.red)
+                        .matchedGeometryEffect(id: "heart", in: namespace)
+                        .font(.system(size: 25))
+                        .onTapGesture {
+                            isLiked.toggle()
+                        }
+                }
             }
             .padding(.horizontal, 10)
             

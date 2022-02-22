@@ -37,8 +37,7 @@ struct ProfileStatsView: View {
             HStack {
                 Text("Profile")
                     .foregroundColor(.white)
-                    .font(.largeTitle)
-                    .bold()
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
                 
                 Spacer()
             }
