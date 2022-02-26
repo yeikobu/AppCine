@@ -178,6 +178,7 @@ struct PopularMoviesInfoView: View {
     @State var imgUrl: String = ""
     @State var overview: String = ""
     @State var releaseDate: String = ""
+    @State var movieID: Int = 0
     @State var isMovieDetailPressed: Bool = false
     @State var isShowDetailPage: Bool = false
     @Namespace var animation
@@ -193,7 +194,8 @@ struct PopularMoviesInfoView: View {
                             title = movie.title!
                             overview = movie.overview!
                             releaseDate = movie.releaseDate!
-                            imgUrl = moviesViewModel.imgUrl + movie.posterPath!            
+                            imgUrl = moviesViewModel.imgUrl + movie.posterPath!
+                            movieID = movie.id!
                         } label: {
                             
                             VStack {
@@ -245,7 +247,7 @@ struct PopularMoviesInfoView: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         NavigationLink(isActive: $isMovieDetailPressed) {
-            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl, movieID: movieID)
                 .transition(AnyTransition.scale)
         } label: {
             EmptyView()
@@ -261,6 +263,7 @@ struct UpcomingrMoviesInfoView: View {
     @State var imgUrl: String = ""
     @State var overview: String = ""
     @State var releaseDate: String = ""
+    @State var movieID: Int = 0
     @State var isMovieDetailPressed: Bool = false
     let gridForm = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -276,7 +279,7 @@ struct UpcomingrMoviesInfoView: View {
                             releaseDate = movie.releaseDate!
                             imgUrl = moviesViewModel.imgUrl + movie.posterPath!
                             isMovieDetailPressed.toggle()
-                            
+                            movieID = movie.id!
                         } label: {
                             
                             VStack {
@@ -328,7 +331,7 @@ struct UpcomingrMoviesInfoView: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         NavigationLink(isActive: $isMovieDetailPressed) {
-            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl, movieID: movieID)
                 .transition(AnyTransition.scale)
         } label: {
             EmptyView()
@@ -344,6 +347,7 @@ struct TopRatedMoviesInfoView: View {
     @State var imgUrl: String = ""
     @State var overview: String = ""
     @State var releaseDate: String = ""
+    @State var movieID: Int = 0
     @State var isMovieDetailPressed: Bool = false
     let gridForm = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -359,7 +363,7 @@ struct TopRatedMoviesInfoView: View {
                             releaseDate = movie.releaseDate!
                             imgUrl = moviesViewModel.imgUrl + movie.posterPath!
                             isMovieDetailPressed.toggle()
-                            
+                            movieID = movie.id!
                         } label: {
                             
                             VStack {
@@ -412,7 +416,7 @@ struct TopRatedMoviesInfoView: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         NavigationLink(isActive: $isMovieDetailPressed) {
-            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl)
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl, movieID: movieID)
                 .transition(AnyTransition.scale)
         } label: {
             EmptyView()

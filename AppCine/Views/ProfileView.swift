@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ProfileView: View {
     var body: some View {
         ZStack {
             Color("BackgroundColor")
                 .ignoresSafeArea()
+            
             ScrollView(showsIndicators: false) {
-                ProfileStatsView()
+                ProfileStatsView(updateUserDataViewModel: UpdateUserDataViewModel())
             }
             
         }
@@ -24,14 +26,15 @@ struct ProfileView: View {
 
 struct ProfileStatsView: View {
     
+    @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @State var likesAmount: Int = 0
     @State var commentsAmount: Int = 0
     @State var profileImage: UIImage = UIImage(named: "avatar")!
-    var saveData = SaveData()
-    @State var userName: String = "User Name"
     @State var isEditProfileAvtive: Bool = false
+    @State var userName: String = "User Name"
     
     var body: some View {
+        
         VStack {
             
             HStack {
@@ -54,10 +57,10 @@ struct ProfileStatsView: View {
                 .cornerRadius(150)
             
             
-            
-            Text(userName)
+            Text(updateUserDataViewModel.userName)
                 .foregroundColor(.white)
                 .font(.system(size: 20,weight: .bold, design: .rounded))
+            
             
             VStack(alignment: .trailing) {
              
@@ -85,7 +88,11 @@ struct ProfileStatsView: View {
             
             Spacer()
             
-            SettingsView(isEditProfileAvtive: $isEditProfileAvtive)
+            SettingsView(updateUserDataViewModel: self.updateUserDataViewModel, isEditProfileAvtive: $isEditProfileAvtive)
+                .task {
+//                    updateUserDataViewModel.getCurrentUserName()
+                    userName = updateUserDataViewModel.userName
+                }
             
             Spacer()
             Spacer()
@@ -95,12 +102,12 @@ struct ProfileStatsView: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            
             if returnUiImage(named: "avatar") != nil {
                 profileImage = returnUiImage(named: "avatar")!
             } else {
                 print("Can't find user image")
             }
+            
         }
         
     }
@@ -119,6 +126,7 @@ struct ProfileStatsView: View {
 
 struct SettingsView: View {
     
+    @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @Binding var isEditProfileAvtive: Bool
     @State var isLogoutActive: Bool = false
     
@@ -135,7 +143,6 @@ struct SettingsView: View {
                             .foregroundColor(.white)
                     }
                    
-                    
                     Spacer()
                     
                     Image(systemName: "chevron.right")
@@ -163,7 +170,7 @@ struct SettingsView: View {
             }
             .padding(.horizontal, 10)
             .sheet(isPresented: $isEditProfileAvtive) {
-                EditProfileView()
+                EditProfileView(updateUserDataViewModel: self.updateUserDataViewModel)
             }
             
             Divider()

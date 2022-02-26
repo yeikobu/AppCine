@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct EditProfileView: View {
     
+    @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @Environment(\.presentationMode) var presentationMode
-    @State var isBackButtonActive: Bool = false
     
     var body: some View {
         ZStack {
@@ -36,7 +37,7 @@ struct EditProfileView: View {
                 
                 Spacer()
                 
-                UserImageModuleView()
+                UserImageModuleView(updateUserDataViewModel: self.updateUserDataViewModel)
                 
                 Spacer()
             }
@@ -50,6 +51,7 @@ struct EditProfileView: View {
 
 struct UserImageModuleView: View {
     
+    @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @State var selectedProfileImage: UIImage = UIImage(named: "avatar")!
     @State var profileImage: Image? = Image("avatar")
     @State var isCameraActive: Bool = false
@@ -141,10 +143,10 @@ struct UserImageModuleView: View {
                    
                 }
                 
-                EditFieldsModuleView()
+                EditFieldsModuleView(updateUserDataViewModel: self.updateUserDataViewModel)
             }
         }
-        .padding(.top, 30)
+        .padding(.top, 50)
         .onAppear(perform: {
             if returnUiImage(named: "avatar") != nil {
                 selectedProfileImage = returnUiImage(named: "avatar")!
@@ -170,9 +172,11 @@ struct UserImageModuleView: View {
 
 struct EditFieldsModuleView: View {
     
+    @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
-    @State var isSecure: Bool = true
     @State var areFieldsIncomplete: Bool = false
+    @State var userName: String = ""
+    var userEmail: String = Auth.auth().currentUser?.email ?? "example@example.com"
     
     var body: some View {
         VStack {
@@ -194,10 +198,13 @@ struct EditFieldsModuleView: View {
                     
                     ZStack(alignment: .leading) {
                         if signupSigninValidation.userName.isEmpty {
-                            Text("Write your username/nickname")
+                            Text(userName)
                                 .foregroundColor(.gray)
                                 .font(.caption)
                                 .padding(.leading, 5)
+                                .task {
+                                    userName = updateUserDataViewModel.userName
+                                }
                         }
                         
                         TextField("", text: $signupSigninValidation.userName)
@@ -237,7 +244,7 @@ struct EditFieldsModuleView: View {
                     ZStack(alignment: .leading) {
                         
                         if signupSigninValidation.email.isEmpty {
-                            Text(verbatim: "example@example.com")
+                            Text(verbatim: userEmail)
                                 .foregroundColor(.gray)
                                 .font(.caption)
                                 .padding(.leading, 5)
@@ -266,80 +273,31 @@ struct EditFieldsModuleView: View {
                 
                 VStack(alignment: .leading) {
                     //Password field
-                    Text("Password")
-                        .foregroundColor(.white)
-                        .bold()
-                        .padding(.top, 10)
-                        .padding(.bottom, -0.5)
-                        .padding(.leading, 4)
-                    
-                    HStack {
-                        Image(systemName: "lock")
-                            .foregroundColor(.white)
-                            .font(.system(size: 22))
-                            .padding(.leading)
-                        
-                        ZStack(alignment: .leading) {
-                            
-                            if signupSigninValidation.password.isEmpty {
-                                Text("Chose your password")
-                                    .foregroundColor(.gray)
-                                    .font(.caption)
-                                    .padding(.leading, 5)
-                            }
-                            
-                            if isSecure {
-                                SecureField("", text: $signupSigninValidation.password)
-                                    .foregroundColor(.white)
-                                    .keyboardType(.default)
-                                    .font(.body)
-                                    .padding(15)
-                                    .padding(.leading, -10)
-                                    .disableAutocorrection(true)
-                                    .autocapitalization(.none)
-                            } else {
-                                TextField("", text: $signupSigninValidation.password)
-                                    .foregroundColor(.white)
-                                    .keyboardType(.default)
-                                    .font(.body)
-                                    .padding(15)
-                                    .padding(.leading, -5)
-                                    .disableAutocorrection(true)
-                                    .autocapitalization(.none)
-                            }
-                        }
-                        
-                        Button {
-                            withAnimation(Animation.default) {
-                                isSecure.toggle()
-                            }
-                        } label: {
-                            isSecure ?
-                            Image(systemName: "eye")
-                                .foregroundColor(Color("ButtonsColor"))
-                                .padding(.trailing) :
-                            Image(systemName: "eye.slash")
-                                .foregroundColor(Color(.red))
-                                .padding(.trailing)
-                        }
-
-                    }
-                    .background(Color("TextFieldColor"))
-                    .cornerRadius(15)
-                    
-                    //Password form validations
-                    VStack {
-                        if !signupSigninValidation.password.isEmpty {
-                            ValidationFormView(iconName: signupSigninValidation.isPasswordLengthValid ? "checkmark.circle" : "xmark.circle", iconColor: signupSigninValidation.isPasswordLengthValid ? Color.green : Color.red, baseForegroundColor: Color.gray, formText: "Must contain at least 8 characters", conditionChecked: signupSigninValidation.isPasswordLengthValid)
-                            
-                            ValidationFormView(iconName: signupSigninValidation.isPasswordCapitalLetter ? "checkmark.circle" : "xmark.circle", iconColor: signupSigninValidation.isPasswordCapitalLetter ? Color.green : Color.red, baseForegroundColor: Color.gray, formText: "Must cointain at leas one capital letter", conditionChecked: signupSigninValidation.isPasswordCapitalLetter)
-                        }
-                    }
-                    
                     
                     //COnfirm Button
                     Button {
-                        //
+                        if signupSigninValidation.userName.isEmpty {
+                            updateUserDataViewModel.updateUserName(uName: userName) { userName in
+                                self.userName = userName
+                            }
+                        } else {
+                            updateUserDataViewModel.updateUserName(uName: signupSigninValidation.userName) { userName in
+                                self.userName = userName
+                            }
+                        }
+                        
+                        updateUserDataViewModel.uploadProfileImage()
+                        updateUserDataViewModel.downloadImage()
+//                        if signupSigninValidation.email.isEmpty {
+//                            Auth.auth().currentUser?.updateEmail(to: userEmail, completion: { error in
+//                                print(error ?? "Done")
+//                            })
+//                        } else {
+//                            Auth.auth().currentUser?.updateEmail(to: signupSigninValidation.email, completion: { error in
+//                                print(error ?? "Done")
+//                            })
+//                        }
+                      
                     } label: {
                         Text("SAVE DATA")
                             .foregroundColor(.white)
@@ -373,6 +331,6 @@ struct EditFieldsModuleView: View {
 
 struct EditProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        EditProfileView()
+        EditProfileView(updateUserDataViewModel: UpdateUserDataViewModel())
     }
 }
