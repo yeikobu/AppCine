@@ -30,6 +30,8 @@
 		1675722827C40AD00090966A /* LikesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1675722727C40AD00090966A /* LikesDataSource.swift */; };
 		1675722A27C80CBC0090966A /* LikesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1675722927C80CBB0090966A /* LikesModel.swift */; };
 		1675722D27C80DBB0090966A /* UpdateUserDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1675722C27C80DBB0090966A /* UpdateUserDataViewModel.swift */; };
+		1675722F27C989FD0090966A /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 1675722E27C989FD0090966A /* FirebaseStorage */; };
+		1675723127C989FD0090966A /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 1675723027C989FD0090966A /* FirebaseStorageSwift-Beta */; };
 		168B6A4127B842C6000EE04D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 168B6A4027B842C6000EE04D /* Kingfisher */; };
 		168B6A4327B88800000EE04D /* UpcomingMoviesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 168B6A4227B88800000EE04D /* UpcomingMoviesViewModel.swift */; };
 		168B6A4527B88D3D000EE04D /* TopRatedMoviesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 168B6A4427B88D3D000EE04D /* TopRatedMoviesViewModel.swift */; };
@@ -93,8 +95,10 @@
 			files = (
 				168B6A4127B842C6000EE04D /* Kingfisher in Frameworks */,
 				16FD8AC027BAC45B000C4D8F /* FirebaseAuth in Frameworks */,
+				1675722F27C989FD0090966A /* FirebaseStorage in Frameworks */,
 				164788E927A8C32B00C4DC77 /* Lottie in Frameworks */,
 				16FD8ABB27BABF74000C4D8F /* FirebaseAnalyticsSwift-Beta in Frameworks */,
+				1675723127C989FD0090966A /* FirebaseStorageSwift-Beta in Frameworks */,
 				16FD8AB927BABF74000C4D8F /* FirebaseAnalytics in Frameworks */,
 				1675722127C40A020090966A /* FirebaseFirestoreSwift-Beta in Frameworks */,
 				16FD8ACD27BED374000C4D8F /* GoogleSignIn in Frameworks */,
@@ -258,6 +262,8 @@
 				16FD8ACC27BED374000C4D8F /* GoogleSignIn */,
 				1675721E27C40A020090966A /* FirebaseFirestore */,
 				1675722027C40A020090966A /* FirebaseFirestoreSwift-Beta */,
+				1675722E27C989FD0090966A /* FirebaseStorage */,
+				1675723027C989FD0090966A /* FirebaseStorageSwift-Beta */,
 			);
 			productName = AppCine;
 			productReference = 164788D427A8BA1900C4DC77 /* AppCine.app */;
@@ -606,6 +612,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 16FD8AB727BABF74000C4D8F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFirestoreSwift-Beta";
+		};
+		1675722E27C989FD0090966A /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 16FD8AB727BABF74000C4D8F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		1675723027C989FD0090966A /* FirebaseStorageSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 16FD8AB727BABF74000C4D8F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseStorageSwift-Beta";
 		};
 		168B6A4027B842C6000EE04D /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

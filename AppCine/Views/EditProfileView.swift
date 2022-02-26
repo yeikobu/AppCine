@@ -286,7 +286,8 @@ struct EditFieldsModuleView: View {
                             }
                         }
                         
-                        
+                        updateUserDataViewModel.uploadProfileImage()
+                        updateUserDataViewModel.downloadImage()
 //                        if signupSigninValidation.email.isEmpty {
 //                            Auth.auth().currentUser?.updateEmail(to: userEmail, completion: { error in
 //                                print(error ?? "Done")
