@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseAuth
+import Kingfisher
 
 struct EditProfileView: View {
     
@@ -37,7 +38,7 @@ struct EditProfileView: View {
                 
                 Spacer()
                 
-                UserImageModuleView(updateUserDataViewModel: self.updateUserDataViewModel)
+                UserImageModuleView(updateUserDataViewModel: self.updateUserDataViewModel, image: UIImage(named: "avatar"))
                 
                 Spacer()
             }
@@ -52,7 +53,8 @@ struct EditProfileView: View {
 struct UserImageModuleView: View {
     
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
-    @State var selectedProfileImage: UIImage = UIImage(named: "avatar")!
+//    @State var selectedProfileImage: UIImage = UIImage(named: "avatar")!
+    @State var image: UIImage?
     @State var profileImage: Image? = Image("avatar")
     @State var isCameraActive: Bool = false
     @State var isPhotosActive: Bool = false
@@ -69,18 +71,41 @@ struct UserImageModuleView: View {
                     } label: {
                         ZStack {
                             
-                            if isPhotoChanged == false {
-                                profileImage!
+//                            if isPhotoChanged == false {
+//                                profileImage!
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fill)
+//                                    .frame(width: 150, height: 150, alignment: .center)
+//                                    .cornerRadius(150)
+//                            } else {
+//                                Image(uiImage: selectedProfileImage)
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fill)
+//                                    .frame(width: 150, height: 150, alignment: .center)
+//                                    .cornerRadius(150)
+//                            }
+                            if let image = self.image {
+                                Image(uiImage: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 150, height: 150, alignment: .center)
                                     .cornerRadius(150)
                             } else {
-                                Image(uiImage: selectedProfileImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 150, height: 150, alignment: .center)
-                                    .cornerRadius(150)
+                                
+                                if updateUserDataViewModel.userImageURL.isEmpty {
+                                    profileImage!
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 150, height: 150, alignment: .center)
+                                        .cornerRadius(150)
+                                } else {
+                                    KFImage(URL(string: updateUserDataViewModel.userImageURL))
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 150, height: 150, alignment: .center)
+                                        .cornerRadius(150)
+                                }
+                               
                             }
                            
                             
@@ -120,11 +145,14 @@ struct UserImageModuleView: View {
 
                         }
                         .sheet(isPresented: $isPhotosActive) {
-                            SUImagePickerView(sourceType: .savedPhotosAlbum, image: $profileImage, isPresented: $isPhotosActive)
+                            ImagePicker(image: $image)
+                                .onDisappear {
+                                    updateUserDataViewModel.uploadProfileImage(image: image)
+                                }
                         }
-                        .sheet(isPresented: $isCameraActive) {
-                            SUImagePickerView(sourceType: .camera, image: $profileImage, isPresented: $isCameraActive)
-                        }
+//                        .sheet(isPresented: $isCameraActive) {
+//                            SUImagePickerView(sourceType: .camera, image: $profileImage, isPresented: $isCameraActive)
+//                        }
                         
                     }
                     .cornerRadius(150)
@@ -147,14 +175,14 @@ struct UserImageModuleView: View {
             }
         }
         .padding(.top, 50)
-        .onAppear(perform: {
-            if returnUiImage(named: "avatar") != nil {
-                selectedProfileImage = returnUiImage(named: "avatar")!
-                
-            }else{
-                profileImage = Image("avatar")
-            }
-        })
+//        .onAppear(perform: {
+//            if returnUiImage(named: "avatar") != nil {
+//                selectedProfileImage = returnUiImage(named: "avatar")!
+//
+//            }else{
+//                profileImage = Image("avatar")
+//            }
+//        })
         
 
     }
@@ -174,6 +202,7 @@ struct EditFieldsModuleView: View {
     
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
+    @State var image: UIImage?
     @State var areFieldsIncomplete: Bool = false
     @State var userName: String = ""
     var userEmail: String = Auth.auth().currentUser?.email ?? "example@example.com"
@@ -286,8 +315,7 @@ struct EditFieldsModuleView: View {
                             }
                         }
                         
-                        updateUserDataViewModel.uploadProfileImage()
-                        updateUserDataViewModel.downloadImage()
+//                        updateUserDataViewModel.downloadImage()
 //                        if signupSigninValidation.email.isEmpty {
 //                            Auth.auth().currentUser?.updateEmail(to: userEmail, completion: { error in
 //                                print(error ?? "Done")

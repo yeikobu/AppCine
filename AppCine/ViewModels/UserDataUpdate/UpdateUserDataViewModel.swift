@@ -10,17 +10,22 @@ import FirebaseAuth
 import Accelerate
 import Firebase
 import FirebaseStorage
+import UIKit
 
 final class UpdateUserDataViewModel: ObservableObject {
     
     @Published var userName: String = ""
     private var changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
+    let currentUserUID = Auth.auth().currentUser?.uid
     @Published var userEmail: String = "example@example.com"
-    let storageReference = Storage.storage().reference()
-    let currentUserUID = Auth.auth().currentUser!.uid
+    @Published var userImageURL: String = ""
+    
+    
     
     init() {
         userName = Auth.auth().currentUser?.displayName ?? "User Name"
+        
+        userImageURL = "https://firebasestorage.googleapis.com:443/v0/b/appcineios.appspot.com/o/\(String(describing: currentUserUID))?alt=media&token=2d16e6f7-fd97-4bd7-8d90-8a9f224ed8ac"
     }
     
     func getCurrentUserName() {
@@ -40,42 +45,46 @@ final class UpdateUserDataViewModel: ObservableObject {
         
     }
     
-    func uploadProfileImage() {
-        let localFile = URL(string: "avatar.jpg")
-        let spaceRef = self.storageReference.child("images/\(String(describing: currentUserUID))/avatar.jpg")
-        
-        let uploadTask = spaceRef.putFile(from: localFile!, metadata: nil) { metadata, error in
-            guard let metadata = metadata else {
-                print("An herros ocurred")
-                return
+    func uploadProfileImage(image: UIImage?) {
+//        let localFile = URL(string: "avatar.jpg")
+        let reference = Storage.storage().reference(withPath: self.currentUserUID!)
+        guard let imageData = image?.jpegData(compressionQuality: 0.5) else { return }
+        reference.putData(imageData, metadata: nil) { metadata, error in
+            if let error = error {
+                print(error)
             }
             
-            let size = metadata.size
-            
-            spaceRef.downloadURL { (url, error) in
-                guard let downloadURL = url else {
+            reference.downloadURL { url, error in
+                if let error = error {
+                    print(error)
                     return
+                }
+                print(url?.absoluteString ?? "")
+                
+                if let imageURL = url {
+                    self.userImageURL = imageURL.absoluteString
                 }
             }
         }
-        uploadTask.resume()
+        
+        print(self.userImageURL)
     }
     
     
-    func downloadImage() {
-        let spaceRef = self.storageReference.child("images/\(String(describing: currentUserUID))/avatar.jpg")
-        
-        let localURL = URL(string: "avatar.jpg")
-        
-        let downloadTask = spaceRef.write(toFile: localURL!) { url, error in
-          if let error = error {
-            print(error)
-          } else {
-            print(url ?? "hola")
-          }
-        }
-        
-        downloadTask.resume()
-    }
+//    func downloadImage() {
+//        let spaceRef = self.storageReference.child("images/\(String(describing: currentUserUID))/avatar.jpg")
+//
+//        let localURL = URL(string: "avatar.jpg")
+//
+//        let downloadTask = spaceRef.write(toFile: localURL!) { url, error in
+//          if let error = error {
+//            print(error)
+//          } else {
+//            print(url ?? "hola")
+//          }
+//        }
+//
+//        downloadTask.resume()
+//    }
     
 }
