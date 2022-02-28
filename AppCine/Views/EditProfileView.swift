@@ -20,25 +20,36 @@ struct EditProfileView: View {
                 .ignoresSafeArea()
             
             VStack {
-                VStack(alignment: .center) {
+                ZStack(alignment: .topLeading) {
                     
                     Button {
+                        updateUserDataViewModel.getImgURL()
                         presentationMode.wrappedValue.dismiss()
                     } label: {
-                        Image(systemName: "chevron.compact.down")
+                        Image(systemName: "chevron.backward")
                             .foregroundColor(Color.white)
                             .font(.system(size: 35, weight: .bold))
                             .padding(.top, 5)
                             .shadow(color: .black.opacity(0.90), radius: 5, x: 5, y: 5)
                             .shadow(color: .black.opacity(0.90), radius: 5, x: -5, y: -5)
+                        
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 10)
                    
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.top)
+                
+                Text("Edit profile")
+                    .foregroundColor(.white)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 10)
                 
                 Spacer()
                 
-                UserImageModuleView(updateUserDataViewModel: self.updateUserDataViewModel, image: UIImage(named: "avatar"))
+                UserImageModuleView(updateUserDataViewModel: self.updateUserDataViewModel)
                 
                 Spacer()
             }
@@ -53,13 +64,13 @@ struct EditProfileView: View {
 struct UserImageModuleView: View {
     
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
-//    @State var selectedProfileImage: UIImage = UIImage(named: "avatar")!
-    @State var image: UIImage?
+    @State var selectedProfileImage: UIImage?
     @State var profileImage: Image? = Image("avatar")
     @State var isCameraActive: Bool = false
     @State var isPhotosActive: Bool = false
     @State var isShowingConfirmation: Bool = false
     @State var isPhotoChanged: Bool = true
+    @State var userImgURL: String = ""
     
     var body: some View {
         
@@ -67,47 +78,31 @@ struct UserImageModuleView: View {
             VStack {
                 ZStack {
                     Button {
+                        updateUserDataViewModel.getImgURL()
                         self.isShowingConfirmation.toggle()
                     } label: {
                         ZStack {
-                            
-//                            if isPhotoChanged == false {
-//                                profileImage!
-//                                    .resizable()
-//                                    .aspectRatio(contentMode: .fill)
-//                                    .frame(width: 150, height: 150, alignment: .center)
-//                                    .cornerRadius(150)
-//                            } else {
-//                                Image(uiImage: selectedProfileImage)
-//                                    .resizable()
-//                                    .aspectRatio(contentMode: .fill)
-//                                    .frame(width: 150, height: 150, alignment: .center)
-//                                    .cornerRadius(150)
-//                            }
-                            if let image = self.image {
-                                Image(uiImage: image)
+                            if isPhotoChanged == false {
+                                profileImage!
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 150, height: 150, alignment: .center)
                                     .cornerRadius(150)
                             } else {
-                                
-                                if updateUserDataViewModel.userImageURL.isEmpty {
-                                    profileImage!
+                                if let selectedProfileImage = selectedProfileImage {
+                                    Image(uiImage: selectedProfileImage)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(width: 150, height: 150, alignment: .center)
                                         .cornerRadius(150)
                                 } else {
-                                    KFImage(URL(string: updateUserDataViewModel.userImageURL))
+                                    KFImage(URL(string: userImgURL))
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(width: 150, height: 150, alignment: .center)
                                         .cornerRadius(150)
                                 }
-                               
                             }
-                           
                             
                             Text("Edit")
                                 .foregroundColor(Color(.white))
@@ -144,14 +139,23 @@ struct UserImageModuleView: View {
 
 
                         }
-                        .sheet(isPresented: $isPhotosActive) {
-                            ImagePicker(image: $image)
+                        .task {
+                            userImgURL = updateUserDataViewModel.userImageURL
+                        }
+                        .fullScreenCover(isPresented: $isPhotosActive, onDismiss: {
+                            updateUserDataViewModel.getImgURL()
+                        }) {
+                            ImagePicker(image: $selectedProfileImage)
+//                            SUImagePickerView(sourceType: .savedPhotosAlbum, image: $profileImage, isPresented: $isPhotosActive)
                                 .onDisappear {
-                                    updateUserDataViewModel.uploadProfileImage(image: image)
+                                    updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage!)
                                 }
                         }
 //                        .sheet(isPresented: $isCameraActive) {
 //                            SUImagePickerView(sourceType: .camera, image: $profileImage, isPresented: $isCameraActive)
+//                                .onDisappear {
+//                                    updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage!)
+//                                }
 //                        }
                         
                     }
@@ -175,14 +179,15 @@ struct UserImageModuleView: View {
             }
         }
         .padding(.top, 50)
-//        .onAppear(perform: {
+        .onAppear(perform: {
 //            if returnUiImage(named: "avatar") != nil {
 //                selectedProfileImage = returnUiImage(named: "avatar")!
 //
 //            }else{
 //                profileImage = Image("avatar")
 //            }
-//        })
+//            updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage)
+        })
         
 
     }

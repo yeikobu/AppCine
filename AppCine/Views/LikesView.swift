@@ -39,6 +39,7 @@ struct LikedMoviesGridVIew: View {
                 .foregroundColor(.white)
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 20)
             
             
             ScrollView(showsIndicators: false) {

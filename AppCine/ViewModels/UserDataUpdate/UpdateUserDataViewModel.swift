@@ -14,9 +14,9 @@ import UIKit
 
 final class UpdateUserDataViewModel: ObservableObject {
     
-    @Published var userName: String = ""
+    @Published var userName: String = Auth.auth().currentUser?.displayName ?? "User Name"
     private var changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
-    let currentUserUID = Auth.auth().currentUser?.uid
+    let currentUserUID = Auth.auth().currentUser!.uid
     @Published var userEmail: String = "example@example.com"
     @Published var userImageURL: String = ""
     
@@ -25,7 +25,9 @@ final class UpdateUserDataViewModel: ObservableObject {
     init() {
         userName = Auth.auth().currentUser?.displayName ?? "User Name"
         
-        userImageURL = "https://firebasestorage.googleapis.com:443/v0/b/appcineios.appspot.com/o/\(String(describing: currentUserUID))?alt=media&token=2d16e6f7-fd97-4bd7-8d90-8a9f224ed8ac"
+        getImgURL()
+//        userImageURL = "https://firebasestorage.googleapis.com:443/v0/b/appcineios.appspot.com/o/images%2F\(String(describing: currentUserUID))%2Favatar.jpg?alt=media&token=8038369d-b8b8-412c-a1f4-c90abd344671"
+        
     }
     
     func getCurrentUserName() {
@@ -42,13 +44,14 @@ final class UpdateUserDataViewModel: ObservableObject {
             }
             
         })
-        
     }
     
-    func uploadProfileImage(image: UIImage?) {
-//        let localFile = URL(string: "avatar.jpg")
-        let reference = Storage.storage().reference(withPath: self.currentUserUID!)
-        guard let imageData = image?.jpegData(compressionQuality: 0.5) else { return }
+    
+    func uploadProfileImage(image: UIImage) {
+        var imgurl: String = ""
+        let reference = Storage.storage().reference(withPath: "images/\(self.currentUserUID)/avatar.jpg")
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
+        
         reference.putData(imageData, metadata: nil) { metadata, error in
             if let error = error {
                 print(error)
@@ -59,32 +62,31 @@ final class UpdateUserDataViewModel: ObservableObject {
                     print(error)
                     return
                 }
-                print(url?.absoluteString ?? "")
                 
                 if let imageURL = url {
-                    self.userImageURL = imageURL.absoluteString
+                    imgurl = imageURL.absoluteString
+                    self.userImageURL = imgurl
                 }
             }
         }
-        
-        print(self.userImageURL)
     }
     
     
-//    func downloadImage() {
-//        let spaceRef = self.storageReference.child("images/\(String(describing: currentUserUID))/avatar.jpg")
-//
-//        let localURL = URL(string: "avatar.jpg")
-//
-//        let downloadTask = spaceRef.write(toFile: localURL!) { url, error in
-//          if let error = error {
-//            print(error)
-//          } else {
-//            print(url ?? "hola")
-//          }
-//        }
-//
-//        downloadTask.resume()
-//    }
+    func getImgURL() {
+        var imgurl: String = ""
+        let reference = Storage.storage().reference(withPath: "images/\(self.currentUserUID)/avatar.jpg")
+        
+        reference.downloadURL { url, error in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            if let imageURL = url {
+                imgurl = imageURL.absoluteString
+                self.userImageURL = imgurl
+            }
+        }
+    }
     
 }

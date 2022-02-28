@@ -9,6 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct HomeView: View {
+    
     var body: some View {
         
         GeometryReader { geometry in
