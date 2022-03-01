@@ -325,6 +325,7 @@ struct SignUpView: View {
     
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
+    @ObservedObject var saveData = SaveData()
     @State var isSecure: Bool = true
     @State var isConfirmSecure: Bool = true
     @State var areFieldsComplete: Bool = false
@@ -598,7 +599,7 @@ struct SignUpView: View {
             Spacer()
             
             NavigationLink(isActive: $areFieldsComplete) {
-                AvatarNicknameView()
+                AvatarNicknameView(saveData: self.saveData)
             } label: {
                 EmptyView()
             }
@@ -617,6 +618,7 @@ struct SignUpView: View {
             areFieldsIncomplete = true
         } else {
             authenticationViewModel.createNewUser(email: signupSigninValidation.email, password: signupSigninValidation.password)
+            saveData.saveData(name: signupSigninValidation.userName)
             areFieldsIncomplete = false
             areFieldsComplete = true
         }

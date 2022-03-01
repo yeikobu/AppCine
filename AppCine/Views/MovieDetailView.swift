@@ -21,7 +21,7 @@ struct MovieDetailView: View {
             
             VStack {
                 ZStack(alignment: .topLeading) {
-                    MovieInfo(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgURL, movieID: movieID, isLiked: false, likeViewModel: LikeViewModel())
+                    MovieInfo(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgURL, movieID: movieID, isLiked: false, likeViewModel: LikeViewModel(), commentsViewModel: CommentsViewModel())
                     
                     Button {
                         presentationMode.wrappedValue.dismiss()
@@ -54,6 +54,7 @@ struct MovieInfo: View {
     @State var isLiked: Bool
     @Namespace var namespace
     @ObservedObject var likeViewModel: LikeViewModel
+    @ObservedObject var commentsViewModel: CommentsViewModel
     
     var body: some View {
         
@@ -126,7 +127,7 @@ struct MovieInfo: View {
                     .foregroundColor(.white)
                     .font(.system(size: 22, weight: .bold, design: .rounded))
                 
-                CommentView()
+                CommentView(movieID: movieID!)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 30)

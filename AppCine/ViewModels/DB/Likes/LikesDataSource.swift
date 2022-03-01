@@ -21,6 +21,7 @@ final class LikesDataSource {
     
     
     func getAllLikedMovies(completionBlock: @escaping (Result<[LikesModel], Error>) -> Void) {
+        
         database.collection(collection).document(uid).collection(subCollection)
             .addSnapshotListener { query, error in
                 

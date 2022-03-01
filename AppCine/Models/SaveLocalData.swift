@@ -8,14 +8,15 @@
 import Foundation
 import SwiftUI
 
-class SaveData {
+class SaveData: ObservableObject {
     
-    func saveData(email: String, pass: String, name: String) -> Bool {
-        print("Got information in saveData: \(email) + \(pass) + \(name)")
+    @Published var userName: String = ""
+    
+    func saveData(name: String)  {
+        print("Got information in saveData: \(name)")
         
-        UserDefaults.standard.set([email, pass, name], forKey: "userDatas")
+        UserDefaults.standard.set([name], forKey: "userDatas")
         
-        return true
     }
     
     func receibeData() -> [String] {
@@ -53,12 +54,15 @@ class SaveData {
         
     }
     
-    func returnUserData() -> String {       //Descomentar esta fucion en produccion
+    func returnUserData() -> String {
         var name: [String] = []
-        if let userName: [String] = UserDefaults.standard.stringArray(forKey: "userDatas") {
-            name = userName
+        if let userNameUserDefaults: [String] = UserDefaults.standard.stringArray(forKey: "userDatas") {
+            name = userNameUserDefaults
         }
-        return name[2]
+        UpdateUserDataViewModel().updateUserName(uName: name[0]) { user in
+            //
+        }
+        return name[0]
     }
     
 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseAuth
+import Kingfisher
 
 struct EditProfileView: View {
     
@@ -19,21 +20,32 @@ struct EditProfileView: View {
                 .ignoresSafeArea()
             
             VStack {
-                VStack(alignment: .center) {
+                ZStack(alignment: .topLeading) {
                     
                     Button {
+                        updateUserDataViewModel.getImgURL()
                         presentationMode.wrappedValue.dismiss()
                     } label: {
-                        Image(systemName: "chevron.compact.down")
+                        Image(systemName: "chevron.backward")
                             .foregroundColor(Color.white)
                             .font(.system(size: 35, weight: .bold))
                             .padding(.top, 5)
                             .shadow(color: .black.opacity(0.90), radius: 5, x: 5, y: 5)
                             .shadow(color: .black.opacity(0.90), radius: 5, x: -5, y: -5)
+                        
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 10)
                    
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.top)
+                
+                Text("Edit profile")
+                    .foregroundColor(.white)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 10)
                 
                 Spacer()
                 
@@ -52,12 +64,13 @@ struct EditProfileView: View {
 struct UserImageModuleView: View {
     
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
-    @State var selectedProfileImage: UIImage = UIImage(named: "avatar")!
+    @State var selectedProfileImage: UIImage?
     @State var profileImage: Image? = Image("avatar")
     @State var isCameraActive: Bool = false
     @State var isPhotosActive: Bool = false
     @State var isShowingConfirmation: Bool = false
     @State var isPhotoChanged: Bool = true
+    @State var userImgURL: String = ""
     
     var body: some View {
         
@@ -65,10 +78,10 @@ struct UserImageModuleView: View {
             VStack {
                 ZStack {
                     Button {
+                        updateUserDataViewModel.getImgURL()
                         self.isShowingConfirmation.toggle()
                     } label: {
                         ZStack {
-                            
                             if isPhotoChanged == false {
                                 profileImage!
                                     .resizable()
@@ -76,13 +89,20 @@ struct UserImageModuleView: View {
                                     .frame(width: 150, height: 150, alignment: .center)
                                     .cornerRadius(150)
                             } else {
-                                Image(uiImage: selectedProfileImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 150, height: 150, alignment: .center)
-                                    .cornerRadius(150)
+                                if let selectedProfileImage = selectedProfileImage {
+                                    Image(uiImage: selectedProfileImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 150, height: 150, alignment: .center)
+                                        .cornerRadius(150)
+                                } else {
+                                    KFImage(URL(string: userImgURL))
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 150, height: 150, alignment: .center)
+                                        .cornerRadius(150)
+                                }
                             }
-                           
                             
                             Text("Edit")
                                 .foregroundColor(Color(.white))
@@ -119,12 +139,24 @@ struct UserImageModuleView: View {
 
 
                         }
-                        .sheet(isPresented: $isPhotosActive) {
-                            SUImagePickerView(sourceType: .savedPhotosAlbum, image: $profileImage, isPresented: $isPhotosActive)
+                        .task {
+                            userImgURL = updateUserDataViewModel.userImageURL
                         }
-                        .sheet(isPresented: $isCameraActive) {
-                            SUImagePickerView(sourceType: .camera, image: $profileImage, isPresented: $isCameraActive)
+                        .fullScreenCover(isPresented: $isPhotosActive, onDismiss: {
+                            updateUserDataViewModel.getImgURL()
+                        }) {
+                            ImagePicker(image: $selectedProfileImage)
+//                            SUImagePickerView(sourceType: .savedPhotosAlbum, image: $profileImage, isPresented: $isPhotosActive)
+                                .onDisappear {
+                                    updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage!)
+                                }
                         }
+//                        .sheet(isPresented: $isCameraActive) {
+//                            SUImagePickerView(sourceType: .camera, image: $profileImage, isPresented: $isCameraActive)
+//                                .onDisappear {
+//                                    updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage!)
+//                                }
+//                        }
                         
                     }
                     .cornerRadius(150)
@@ -148,12 +180,13 @@ struct UserImageModuleView: View {
         }
         .padding(.top, 50)
         .onAppear(perform: {
-            if returnUiImage(named: "avatar") != nil {
-                selectedProfileImage = returnUiImage(named: "avatar")!
-                
-            }else{
-                profileImage = Image("avatar")
-            }
+//            if returnUiImage(named: "avatar") != nil {
+//                selectedProfileImage = returnUiImage(named: "avatar")!
+//
+//            }else{
+//                profileImage = Image("avatar")
+//            }
+//            updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage)
         })
         
 
@@ -174,6 +207,7 @@ struct EditFieldsModuleView: View {
     
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
+    @State var image: UIImage?
     @State var areFieldsIncomplete: Bool = false
     @State var userName: String = ""
     var userEmail: String = Auth.auth().currentUser?.email ?? "example@example.com"
@@ -286,8 +320,7 @@ struct EditFieldsModuleView: View {
                             }
                         }
                         
-                        updateUserDataViewModel.uploadProfileImage()
-                        updateUserDataViewModel.downloadImage()
+//                        updateUserDataViewModel.downloadImage()
 //                        if signupSigninValidation.email.isEmpty {
 //                            Auth.auth().currentUser?.updateEmail(to: userEmail, completion: { error in
 //                                print(error ?? "Done")

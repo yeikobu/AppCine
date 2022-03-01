@@ -6,15 +6,19 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CommentView: View {
+    
+    @State var movieID: Int
+    
     var body: some View {
         ZStack {
             Color("BackgroundColor")
                 .ignoresSafeArea()
             
             VStack {
-                MessageGeneralView()
+                MessageGeneralView(updateUserDataViewModel: UpdateUserDataViewModel(), movieID: movieID) //pasar a .self
             }
         }
     }
@@ -23,13 +27,20 @@ struct CommentView: View {
 
 struct MessageGeneralView: View {
     
+    @ObservedObject var commentsViewModel = CommentsViewModel()
+    @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
+    let gridForm = [GridItem(.flexible())]
     @State var comment: String = ""
+    @State var movieID: Int
+    @State var textAlert: String = ""
+    @State var isAlertActive: Bool = false
+    @State var userName: String = ""
     
     var body: some View {
         VStack {
             
             HStack {
-                Image("avatar")
+                KFImage(URL(string: updateUserDataViewModel.userImageURL))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 50, height: 50, alignment: .center)
@@ -60,7 +71,15 @@ struct MessageGeneralView: View {
                 .padding(.bottom, 5)
                 
                 Button {
-                    //
+                    userName = updateUserDataViewModel.userName
+                    if comment.isEmpty {
+                        textAlert = "The message can not be empty"
+                        isAlertActive.toggle()
+                        return
+                    } else {
+                        commentsViewModel.saveSentComment(movieID: movieID, comment: comment, userName: userName, userImgURL: updateUserDataViewModel.userImageURL)
+                        comment = ""
+                    }
                 } label: {
                     Image(systemName: "paperplane.fill")
                         .foregroundColor(.white)
@@ -75,6 +94,9 @@ struct MessageGeneralView: View {
                 .padding(.trailing, 10)
                 .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
                 .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
+                .alert(isPresented: $isAlertActive) {
+                    Alert(title: Text("Alert!"), message: Text(textAlert), dismissButton: .cancel(Text("Got it!")))
+                }
 
             }
             
@@ -83,9 +105,47 @@ struct MessageGeneralView: View {
                 .cornerRadius(10)
                 .padding(2)
                 
-            SendedMessageView(userName: "Jacob", userComment: "Here the user comment will displays. And this view can expands to infinithy height if is neccesary.")
             
-            SendedMessageView(userName: "Luis", userComment: "Here the user comment will displays. And this view can expands to infinithy height if is neccesary.")
+            LazyVGrid(columns: gridForm) {
+                ForEach(commentsViewModel.comments, id: \.self) { commentInfo in
+                    VStack {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    KFImage(URL(string: commentInfo.userImgURL))
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 50, height: 50, alignment: .center)
+                                        .cornerRadius(50)
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text(commentInfo.userName)
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                                        
+                                        Divider()
+                                            .background(.gray)
+                                    }
+                                }
+                                
+                                Text(commentInfo.comment)
+                                    .foregroundColor(.gray)
+                                    .font(.system(size: 16, design: .rounded))
+                            }
+                        }
+                        
+                    }
+                    .padding()
+                    .background(Color("CardColor"))
+                    .cornerRadius(15)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 8)
+                }
+                
+            }
+            .task {
+                commentsViewModel.getAllLikes(movieID: movieID)
+            }
             
             Spacer()
 
@@ -93,50 +153,8 @@ struct MessageGeneralView: View {
     }
 }
 
-struct SendedMessageView: View {
-    
-    var userName: String
-    var userComment: String
-    
-    var body: some View {
-        
-        VStack {
-            HStack {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Image("avatar")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 50, height: 50, alignment: .center)
-                        
-                        VStack(alignment: .leading) {
-                            Text(userName)
-                                .foregroundColor(.white)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                            
-                            Divider()
-                                .background(.gray)
-                        }
-                    }
-                    
-                    Text(userComment)
-                        .foregroundColor(.gray)
-                        .font(.system(size: 14, design: .rounded))
-                }
-            }
-        }
-        .padding()
-        .background(Color("CardColor"))
-        .cornerRadius(15)
-        .padding(.horizontal, 10)
-        .padding(.top, 8)
-        
-    }
-}
-
-
 struct CommentView_Previews: PreviewProvider {
     static var previews: some View {
-        CommentView()
+        CommentView(movieID: 634649)
     }
 }
