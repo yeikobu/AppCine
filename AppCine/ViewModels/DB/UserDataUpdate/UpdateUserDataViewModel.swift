@@ -16,7 +16,7 @@ final class UpdateUserDataViewModel: ObservableObject {
     
     @Published var userName: String = Auth.auth().currentUser?.displayName ?? "User Name"
     private var changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
-    let currentUserUID = Auth.auth().currentUser!.uid
+    let currentUserUID = Auth.auth().currentUser?.uid
     @Published var userEmail: String = "example@example.com"
     @Published var userImageURL: String = ""
     
@@ -49,7 +49,7 @@ final class UpdateUserDataViewModel: ObservableObject {
     
     func uploadProfileImage(image: UIImage) {
         var imgurl: String = ""
-        let reference = Storage.storage().reference(withPath: "images/\(self.currentUserUID)/avatar.jpg")
+        let reference = Storage.storage().reference(withPath: "images/\(String(describing: self.currentUserUID))/avatar.jpg")
         guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
         
         reference.putData(imageData, metadata: nil) { metadata, error in

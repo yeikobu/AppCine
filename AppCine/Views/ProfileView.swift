@@ -34,9 +34,9 @@ struct ProfileStatsView: View {
     @State var selectedProfileImage: UIImage?
     @State var profileImage: Image? = Image("avatar")
     @State var isPhotoChanged: Bool = true
-    @State var isShowingConfirmation: Bool = false
     @State var isCameraActive: Bool = false
     @State var isPhotosActive: Bool = false
+    @State var isShowingConfirmation: Bool = false
     @State var isEditProfileAvtive: Bool = false
     @State var userName: String = "User Name"
     @State var textAlert: String = ""
