@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import Kingfisher
 
 struct CommentView: View {
@@ -13,20 +14,14 @@ struct CommentView: View {
     @State var movieID: Int
     
     var body: some View {
-        ZStack {
-            Color("BackgroundColor")
-                .ignoresSafeArea()
-            
-            VStack {
-                MessageGeneralView(updateUserDataViewModel: UpdateUserDataViewModel(), movieID: movieID) //pasar a .self
-            }
-        }
+        MessageGeneralView(updateUserDataViewModel: UpdateUserDataViewModel(), movieID: movieID) //pasar a .self
     }
 }
 
 
 struct MessageGeneralView: View {
     
+    @StateObject var keyboardHandler = KeyboardHandler()
     @ObservedObject var commentsViewModel = CommentsViewModel()
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     let gridForm = [GridItem(.flexible())]
@@ -35,76 +30,77 @@ struct MessageGeneralView: View {
     @State var textAlert: String = ""
     @State var isAlertActive: Bool = false
     @State var userName: String = ""
+    @State private var offsetValue: CGFloat = 0.0
     
     var body: some View {
         VStack {
-            
-            HStack {
-                KFImage(URL(string: updateUserDataViewModel.userImageURL))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 50, height: 50, alignment: .center)
-                    .cornerRadius(50)
-                    .padding(.leading, 10)
-                
+            VStack {
                 HStack {
-                    ZStack(alignment: .leading) {
-                        if comment.isEmpty {
-                            Text("Write a comment about this movie")
-                                .foregroundColor(.gray)
-                                .font(.caption)
-                                .padding(.leading, 10)
-                        }
-                        
-                        TextField( "", text: $comment)
-                            .foregroundColor(.white)
-                            .keyboardType(.emailAddress)
-                            .font(.body)
-                            .padding(.vertical, 15)
-                            .padding(.leading, 10)
-                            .disableAutocorrection(true)
-                        
-                    }
-                }
-                .background(Color("TextFieldColor"))
-                .cornerRadius(15)
-                .padding(.bottom, 5)
-                
-                Button {
-                    userName = updateUserDataViewModel.userName
-                    if comment.isEmpty {
-                        textAlert = "The message can not be empty"
-                        isAlertActive.toggle()
-                        return
-                    } else {
-                        commentsViewModel.saveSentComment(movieID: movieID, comment: comment, userName: userName, userImgURL: updateUserDataViewModel.userImageURL)
-                        comment = ""
-                    }
-                } label: {
-                    Image(systemName: "paperplane.fill")
-                        .foregroundColor(.white)
-                        .font(.system(size: 25))
-                        .padding()
+                    KFImage(URL(string: updateUserDataViewModel.userImageURL))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
                         .frame(width: 50, height: 50, alignment: .center)
-                        .background(
-                            LinearGradient(gradient: Gradient(colors: [Color("ButtonsColor"), Color("ButtonsSecondaryColor")]), startPoint: .leading, endPoint: .trailing)
-                        )
-                        .cornerRadius(35)
-                }
-                .padding(.trailing, 10)
-                .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
-                .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
-                .alert(isPresented: $isAlertActive) {
-                    Alert(title: Text("Alert!"), message: Text(textAlert), dismissButton: .cancel(Text("Got it!")))
-                }
+                        .cornerRadius(50)
+                        .padding(.leading, 10)
+                    
+                    HStack {
+                        ZStack(alignment: .leading) {
+                            if comment.isEmpty {
+                                Text("Write a comment about this movie")
+                                    .foregroundColor(.gray)
+                                    .font(.caption)
+                                    .padding(.leading, 10)
+                            }
 
-            }
-            
-            Divider()
-                .background(.gray)
-                .cornerRadius(10)
-                .padding(2)
+                            TextField( "", text: $comment)
+                                .foregroundColor(.white)
+                                .keyboardType(.emailAddress)
+                                .font(.body)
+                                .padding(.vertical, 15)
+                                .padding(.leading, 10)
+                                .disableAutocorrection(true)
+
+                        }
+                    }
+                    .background(Color("TextFieldColor"))
+                    .cornerRadius(15)
+                    .padding(.bottom, 5)
+                    
+                    Button {
+                        userName = updateUserDataViewModel.userName
+                        if comment.isEmpty {
+                            textAlert = "The message can not be empty"
+                            isAlertActive.toggle()
+                            return
+                        } else {
+                            commentsViewModel.saveSentComment(movieID: movieID, comment: comment, userName: userName, userImgURL: updateUserDataViewModel.userImageURL)
+                            comment = ""
+                        }
+                    } label: {
+                        Image(systemName: "paperplane.fill")
+                            .foregroundColor(.white)
+                            .font(.system(size: 25))
+                            .padding()
+                            .frame(width: 50, height: 50, alignment: .center)
+                            .background(
+                                LinearGradient(gradient: Gradient(colors: [Color("ButtonsColor"), Color("ButtonsSecondaryColor")]), startPoint: .leading, endPoint: .trailing)
+                            )
+                            .cornerRadius(35)
+                    }
+                    .padding(.trailing, 10)
+                    .shadow(color: .black.opacity(0.20), radius: 5, x: 1, y: 1)
+                    .shadow(color: .black.opacity(0.20), radius: 5, x: -1, y: -1)
+                    .alert(isPresented: $isAlertActive) {
+                        Alert(title: Text("Alert!"), message: Text(textAlert), dismissButton: .cancel(Text("Got it!")))
+                    }
+
+                }
                 
+                Divider()
+                    .background(.gray)
+                    .cornerRadius(10)
+                    .padding(2)
+            }
             
             LazyVGrid(columns: gridForm) {
                 ForEach(commentsViewModel.comments, id: \.self) { commentInfo in
@@ -144,7 +140,7 @@ struct MessageGeneralView: View {
                 
             }
             .task {
-                commentsViewModel.getAllLikes(movieID: movieID)
+                commentsViewModel.getAllComments(movieID: movieID)
             }
             
             Spacer()
@@ -158,3 +154,4 @@ struct CommentView_Previews: PreviewProvider {
         CommentView(movieID: 634649)
     }
 }
+

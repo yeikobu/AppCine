@@ -47,7 +47,7 @@ struct AvatarNicknameView: View {
                     ZStack {
                         Button {
                             updateUserDataViewModel.getImgURL()
-                            self.isShowingConfirmation.toggle()
+                            self.isPhotosActive.toggle()
                         } label: {
                             if isPhotoChanged == false {
                                 KFImage(URL(string: userImgURL))
@@ -83,38 +83,7 @@ struct AvatarNicknameView: View {
                         .task {
                             userImgURL = updateUserDataViewModel.userImageURL
                         }
-                        .confirmationDialog("Choose a method to select your avatar image", isPresented: self.$isShowingConfirmation) {
-                            Button {
-                                isCameraActive = true
-                                isPhotoChanged = true
-                            } label: {
-                                Text("Take a picture from camera")
-                            }
-                            
-                            
-                            Button {
-                                isPhotosActive = true
-                                isPhotoChanged = true
-                            } label: {
-                                Text("Select an image from Photos")
-                            }
-                            
-                            
-                            Button(role: .cancel) {
-                                //Do something
-                            } label: {
-                                Text("Cancel")
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .sheet(isPresented: $isPhotosActive, onDismiss: {
-                            userImgURL = updateUserDataViewModel.userImageURL
-                        }) {
-                            ImagePicker(image: $selectedProfileImage)
-                                .onDisappear {
-                                    updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage!)
-                                }
-                        }
+                        
                         
                         Image(systemName: "plus.circle.fill")
                             .foregroundColor(Color("ButtonsColor"))
@@ -124,36 +93,15 @@ struct AvatarNicknameView: View {
                             .shadow(color: .black, radius: 5, x: -1, y: -1)
                             
                     }
-                    .confirmationDialog("Choose a method to select your avatar image", isPresented: self.$isShowingConfirmation) {
-                        Button {
-                            isCameraActive = true
-                        } label: {
-                            Text("Take a picture from camera")
-                        }
-                        
-                        
-                        Button {
-                            isPhotosActive = true
-                        } label: {
-                            Text("Select an image from Photos")
-                        }
-                        
-                        
-                        Button(role: .cancel) {
-                            //Do something
-                        } label: {
-                            Text("Cancel")
-                                .foregroundColor(.white)
-                        }
-
-
+                    .sheet(isPresented: $isPhotosActive, onDismiss: {
+                        userImgURL = updateUserDataViewModel.userImageURL
+                    }) {
+                        ImagePicker(image: $selectedProfileImage)
+                            .onDisappear {
+                                updateUserDataViewModel.uploadProfileImage(image: selectedProfileImage!)
+                            }
                     }
-                    .sheet(isPresented: $isPhotosActive) {
-                        SUImagePickerView(sourceType: .savedPhotosAlbum, image: $profileImage, isPresented: $isPhotosActive)
-                    }
-                    .sheet(isPresented: $isCameraActive) {
-                        SUImagePickerView(sourceType: .camera, image: $profileImage, isPresented: $isCameraActive)
-                    }
+                    
                     
                 }
                 

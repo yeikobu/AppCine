@@ -29,7 +29,7 @@ struct ProfileStatsView: View {
     
     @ObservedObject var updateUserDataViewModel: UpdateUserDataViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
-    @State var likesAmount: Int = 0
+    @ObservedObject var likesViewModel = LikeViewModel()
     @State var commentsAmount: Int = 0
     @State var selectedProfileImage: UIImage?
     @State var profileImage: Image? = Image("avatar")
@@ -65,6 +65,8 @@ struct ProfileStatsView: View {
             Button {
                 updateUserDataViewModel.getImgURL()
                 self.isShowingConfirmation.toggle()
+                self.isPhotosActive.toggle()
+                
             } label: {
                 if isPhotoChanged == false {
                     KFImage(URL(string: userImgURL))
@@ -97,32 +99,10 @@ struct ProfileStatsView: View {
                     }
                 }
             }
+            .padding()
             .task {
                 userImgURL = updateUserDataViewModel.userImageURL
-            }
-            .confirmationDialog("Choose a method to select your avatar image", isPresented: self.$isShowingConfirmation) {
-                Button {
-                    isCameraActive = true
-                    isPhotoChanged = true
-                } label: {
-                    Text("Take a picture from camera")
-                }
-                
-                
-                Button {
-                    isPhotosActive = true
-                    isPhotoChanged = true
-                } label: {
-                    Text("Select an image from Photos")
-                }
-                
-                
-                Button(role: .cancel) {
-                    //Do something
-                } label: {
-                    Text("Cancel")
-                        .foregroundColor(.white)
-                }
+                likesViewModel.getAllLikes()
             }
             .sheet(isPresented: $isPhotosActive, onDismiss: {
                 userImgURL = updateUserDataViewModel.userImageURL
@@ -193,18 +173,6 @@ struct ProfileStatsView: View {
             }
             .padding(.horizontal, 20)
             
-//            VStack(alignment: .center) {
-//                //Validation form for Username
-//                if !signupSigninValidation.userName.isEmpty {
-//                    ValidationFormView(iconName: signupSigninValidation.isUserNameLengthValid ? "checkmark.circle" : "xmark.circle", iconColor: signupSigninValidation.isUserNameLengthValid ? Color.green : Color.red, baseForegroundColor: Color.gray, formText: "Username must be at least 6 characters", conditionChecked: signupSigninValidation.isUserNameLengthValid)
-//                        .frame(maxWidth: .infinity, alignment: .center)
-//                }
-//            }
-//            .frame(maxWidth: .infinity, alignment: .center)
-            
-           
-            
-            
             VStack(alignment: .trailing) {
              
                 HStack {
@@ -212,21 +180,21 @@ struct ProfileStatsView: View {
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                     
-                    Text("12")
+                    Text("\(likesViewModel.movieLikesCount ?? 0)")
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .black, design: .rounded))
                 }
                 .padding(.top, 10)
                 
-                HStack {
-                    Text("Comments: ")
-                        .foregroundColor(.white)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                    
-                    Text("12")
-                        .foregroundColor(.white)
-                        .font(.system(size: 16, weight: .black, design: .rounded))
-                }
+//                HStack {
+//                    Text("Comments: ")
+//                        .foregroundColor(.white)
+//                        .font(.system(size: 16, weight: .bold, design: .rounded))
+//
+//                    Text("12")
+//                        .foregroundColor(.white)
+//                        .font(.system(size: 16, weight: .black, design: .rounded))
+//                }
             }
             
             Spacer()

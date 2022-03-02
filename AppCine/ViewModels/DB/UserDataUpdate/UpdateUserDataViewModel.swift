@@ -74,7 +74,7 @@ final class UpdateUserDataViewModel: ObservableObject {
     
     func getImgURL() {
         var imgurl: String = ""
-        let reference = Storage.storage().reference(withPath: "images/\(self.currentUserUID)/avatar.jpg")
+        let reference = Storage.storage().reference(withPath: "images/\(String(describing: self.currentUserUID))/avatar.jpg")
         
         reference.downloadURL { url, error in
             if let error = error {

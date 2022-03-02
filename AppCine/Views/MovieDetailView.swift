@@ -49,6 +49,7 @@ struct MovieDetailView: View {
 
 struct MovieInfo: View {
     
+    @StateObject var keyboardHandler = KeyboardHandler()
     var title, overview, releaseDate, imgURL: String
     var movieID: Int?
     @State var isLiked: Bool
@@ -58,91 +59,94 @@ struct MovieInfo: View {
     
     var body: some View {
         
-        ScrollView(showsIndicators: false) {
-            VStack {
-                KFImage(URL(string: imgURL))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .cornerRadius(15)
-            }
-            
-            HStack() {
-                Text(title)
-                    .foregroundColor(.white)
-                    .font(.system(size: 28, weight: .black, design: .rounded))
-                    .padding(.vertical)
-                
-                Spacer()
-                
-                if self.isLiked {
-                    Image(systemName: "heart.fill")
-                        .matchedGeometryEffect(id: "heart", in: namespace)
-                        .foregroundColor(.red)
-                        .font(.system(size: 25, design: .rounded))
-                        .onTapGesture {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.11, blendDuration: 0.09)) {
-                                isLiked.toggle()
-                            }
-                        }
-                } else {
-                    Image(systemName: "heart")
-                        .matchedGeometryEffect(id: "heart", in: namespace)
-                        .foregroundColor(.red)
-                        .font(.system(size: 25, design: .rounded))
-                        .onTapGesture {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.11, blendDuration: 0.09)) {
-                                isLiked.toggle()
-                            }
-                            likeViewModel.saveLikedMovie(title: title, overview: overview, releaseDate: releaseDate, isLiked: isLiked, posterPath: imgURL, movieID: movieID!)
-                            
-//                            likeViewModel.compareId(movieID: movieID)
-                            
-                        }
+        VStack {
+            ScrollView(showsIndicators: false) {
+                VStack {
+                    KFImage(URL(string: imgURL))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .cornerRadius(15)
                 }
-            }
-            .padding(.horizontal, 10)
-            
-            VStack {
                 
-                HStack {
-                    Text("Release date: ")
+                HStack() {
+                    Text(title)
                         .foregroundColor(.white)
-                        .font(.subheadline)
-                    Text(releaseDate)
-                        .foregroundColor(.white)
-                        .font(.subheadline)
+                        .font(.system(size: 28, weight: .black, design: .rounded))
+                        .padding(.vertical)
                     
                     Spacer()
+                    
+                    if self.isLiked {
+                        Image(systemName: "heart.fill")
+                            .matchedGeometryEffect(id: "heart", in: namespace)
+                            .foregroundColor(.red)
+                            .font(.system(size: 25, design: .rounded))
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.11, blendDuration: 0.09)) {
+                                    isLiked.toggle()
+                                }
+                            }
+                    } else {
+                        Image(systemName: "heart")
+                            .matchedGeometryEffect(id: "heart", in: namespace)
+                            .foregroundColor(.red)
+                            .font(.system(size: 25, design: .rounded))
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.11, blendDuration: 0.09)) {
+                                    isLiked.toggle()
+                                }
+                                likeViewModel.saveLikedMovie(title: title, overview: overview, releaseDate: releaseDate, isLiked: isLiked, posterPath: imgURL, movieID: movieID!)
+                                
+    //                            likeViewModel.compareId(movieID: movieID)
+                                
+                            }
+                    }
                 }
-                .padding(.bottom, 20)
+                .padding(.horizontal, 10)
                 
-                Text(overview)
-                    .foregroundColor(.white)
+                VStack {
+                    
+                    HStack {
+                        Text("Release date: ")
+                            .foregroundColor(.white)
+                            .font(.subheadline)
+                        Text(releaseDate)
+                            .foregroundColor(.white)
+                            .font(.subheadline)
+                        
+                        Spacer()
+                    }
+                    .padding(.bottom, 20)
+                    
+                    Text(overview)
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 10)
+                
+                VStack(alignment: .leading) {
+
+                    Text("Comments")
+                        .foregroundColor(.white)
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+
+                    CommentView(movieID: movieID!)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 30)
+                
             }
-            .padding(.horizontal, 10)
-            
-            VStack(alignment: .leading) {
-                
-                Text("Comments")
-                    .foregroundColor(.white)
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                
-                CommentView(movieID: movieID!)
+            .task {
+                likeViewModel.checkLikedMovies(movieID: movieID!) { result in
+                    if result == true {
+                        isLiked = true
+                    } else {
+                        isLiked = false
+                    }
+                }
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 30)
-            
         }
+        .padding(.bottom, keyboardHandler.keyboardHeight)
         .ignoresSafeArea()
-        .task {
-            likeViewModel.checkLikedMovies(movieID: movieID!) { result in
-                if result == true {
-                    isLiked = true
-                } else {
-                    isLiked = false
-                }
-            }
-        }
     }
     
     func checkIsLiked() {
