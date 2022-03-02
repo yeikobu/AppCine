@@ -106,7 +106,6 @@ struct SignInAndSingUpView: View {
                     }
                 }
             }
-           
         }
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
@@ -116,6 +115,7 @@ struct SignInAndSingUpView: View {
 
 struct SignInView: View {
     
+    @StateObject var keyboardHandler = KeyboardHandler()
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
     @ObservedObject var signupSigninValidation = SigninSignupValidation()
     @State var isSecure: Bool = true

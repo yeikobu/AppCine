@@ -11,6 +11,7 @@ final class LikeViewModel: ObservableObject {
     @Published var likes: [LikesModel] = []
     @Published var messageError: String?
     @Published var imgUrl: String = "https://image.tmdb.org/t/p/w500"
+    @Published var movieLikesCount: Int?
     private let likeRepository: LikesRepository
     
     
@@ -23,6 +24,8 @@ final class LikeViewModel: ObservableObject {
         likeRepository.getAllLikes { [weak self] result in
             switch result {
             case .success(let likeModels):
+                print("cantidad likes en el viewModel: \(likeModels.count)") //Eliminar
+                self?.movieLikesCount = likeModels.count
                 self?.likes = likeModels
             case .failure(let error):
                 self?.messageError = error.localizedDescription

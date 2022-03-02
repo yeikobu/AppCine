@@ -16,7 +16,7 @@ final class CommentsViewModel: ObservableObject {
         self.commentsRepository = commentsRepository
     }
     
-    func getAllLikes(movieID: Int) {
+    func getAllComments(movieID: Int) {
         commentsRepository.getAllComments(movieID: movieID) { [weak self] result in
             switch result {
             case .success(let commentsModels):
