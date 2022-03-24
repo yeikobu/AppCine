@@ -38,12 +38,22 @@ struct HomeView: View {
 
 struct HomeSubModuleView: View {
     
-    @State var searchText: String = ""
+    @ObservedObject var searchMovie: SearchMovie = SearchMovie()
+    @State var text: String = ""
     @State var currentTab: String = "Popular"
     @State var isPopularButtonSelected: Bool = true
     @State var isUpcomingButtonSelected: Bool = false
     @State var isTopRatedButtonSelected: Bool = false
     @Namespace var animation
+    
+    @State var title: String = ""
+    @State var imgUrl: String = ""
+    @State var overview: String = ""
+    @State var releaseDate: String = ""
+    @State var movieID: Int = 0
+    @State var isMovieDetailPressed: Bool = false
+    @State var isShowDetailPage: Bool = false
+    let gridForm = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
         
@@ -51,32 +61,37 @@ struct HomeSubModuleView: View {
             
             HStack {
                 Button {
-                    //Do something
+                    searchMovie.searchedMovie = text
+                    searchMovie.searchMovie()
                 } label: {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(searchText.isEmpty ? .gray : Color("ButtonsColor"))
+                        .foregroundColor(text.isEmpty ? .gray : Color("ButtonsColor"))
                         .font(.system(size: 20))
                 }
             
                 ZStack(alignment: .leading) {
-                    if searchText.isEmpty {
+                    if text.isEmpty {
                         Text("Search movies")
                             .foregroundColor(.gray)
                             .font(.body)
                             .padding(.leading, 5)
                     }
                     
-                    TextField("", text: $searchText)
-                        .foregroundColor(.white)
+                    TextField("", text: $text) {(_) in } onCommit: {
+                        searchMovie.searchedMovie = text
+                        searchMovie.searchMovie()
+                    }
+                    .foregroundColor(.white)
+                    .disableAutocorrection(true)
                 }
                 
                 Button {
                     withAnimation(Animation.spring()) {
-                        searchText = ""
+                        text = ""
                     }
                 } label: {
                     Image(systemName: "xmark")
-                        .foregroundColor(searchText.isEmpty ? .gray : Color("ButtonsColor"))
+                        .foregroundColor(text.isEmpty ? .gray : Color("ButtonsColor"))
                         .font(.system(size: 20))
                 }
 
@@ -85,47 +100,116 @@ struct HomeSubModuleView: View {
             .background(Color("TextFieldColor"))
             .clipShape(Capsule())
             
-            VStack(alignment: .center) {
-                HStack(spacing: 0) {
+            ZStack {
+                VStack(alignment: .center) {
+                    HStack(spacing: 0) {
+                        
+                        TabButton(title: "Popular", animation: animation, currentTab: $currentTab)
+                            
+                        TabButton(title: "Upcoming", animation: animation, currentTab: $currentTab)
+                            
+                        TabButton(title: "Top Rated", animation: animation, currentTab: $currentTab)
+                        
+                    }
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(12)
                     
-                    TabButton(title: "Popular", animation: animation, currentTab: $currentTab)
-                        
-                    TabButton(title: "Upcoming", animation: animation, currentTab: $currentTab)
-                        
-                    TabButton(title: "Top Rated", animation: animation, currentTab: $currentTab)
+                    if currentTab == "Popular" {
+                        withAnimation(Animation.spring()) {
+                            PopularMoviesInfoView()
+                                .transition(.move(edge: .bottom))
+                        }
+                    }
+                    
+                    if currentTab == "Upcoming" {
+                        withAnimation(Animation.spring()) {
+                            UpcomingrMoviesInfoView()
+                                .transition(.move(edge: .bottom))
+                        }
+                    }
+                    
+                    if currentTab == "Top Rated" {
+                        withAnimation(Animation.spring()) {
+                            TopRatedMoviesInfoView()
+                                .transition(.move(edge: .bottom))
+                        }
+                    }
+                    
                     
                 }
                 .frame(maxWidth: .infinity)
-                .cornerRadius(12)
+                .padding(.vertical, 10)
                 
-                if currentTab == "Popular" {
-                    withAnimation(Animation.spring()) {
-                        PopularMoviesInfoView()
-                            .transition(.move(edge: .bottom))
+                if !text.isEmpty {
+                    VStack {
+                        ScrollView(showsIndicators: false) {
+                            LazyVGrid(columns: gridForm) {
+                                ForEach(searchMovie.movieModel?.results ?? [], id: \.self) { movie in
+                                    Button {
+                                        isMovieDetailPressed.toggle()
+                                        title = movie.title!
+                                        overview = movie.overview!
+                                        releaseDate = movie.releaseDate!
+                                        imgUrl = searchMovie.imgUrl + movie.posterPath!
+                                        movieID = movie.id!
+                                    } label: {
+                                        
+                                        VStack {
+                                            
+                                            KFImage(URL(string: searchMovie.imgUrl + (movie.posterPath ?? "")))
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .cornerRadius(15)
+                                            
+                                            VStack {
+                                                
+                                                Text(movie.title!)
+                                                    .foregroundColor(.white)
+                                                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                                                    .frame(maxWidth: 120, maxHeight: 20)
+                                                
+                                                HStack(spacing: 2) {
+                                                    
+                                                    Text("Release date: ")
+                                                        .foregroundColor(.gray)
+                                                        .font(.system(size: 12, design: .rounded))
+                                                    
+                                                    Text(movie.releaseDate!)
+                                                        .foregroundColor(.white)
+                                                        .font(.system(size: 11, design: .rounded))
+                                                }
+                                                .padding(.top, 2)
+                                                .padding(.bottom, 10)
+                                            }
+                                            
+                                        }
+                                        .background(Color("CardColor"))
+                                        .cornerRadius(15)
+                                        
+                                    }
+                                    .padding(.top, 10)
+                                    .padding(.bottom, 20)
+                                }
+                                
+                            }
+                        }
+                        .cornerRadius(15)
                     }
+                    .background(Color("BackgroundColor"))
+                    
                 }
-                
-                if currentTab == "Upcoming" {
-                    withAnimation(Animation.spring()) {
-                        UpcomingrMoviesInfoView()
-                            .transition(.move(edge: .bottom))
-                    }
-                }
-                
-                if currentTab == "Top Rated" {
-                    withAnimation(Animation.spring()) {
-                        TopRatedMoviesInfoView()
-                            .transition(.move(edge: .bottom))
-                    }
-                }
-                
-                
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
             
         }
-        
+        .ignoresSafeArea(edges: .bottom)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        NavigationLink(isActive: $isMovieDetailPressed) {
+            MovieDetailView(title: title, overview: overview, releaseDate: releaseDate, imgURL: imgUrl, movieID: movieID)
+                .transition(AnyTransition.scale)
+        } label: {
+            EmptyView()
+        }
     }
 }
 
